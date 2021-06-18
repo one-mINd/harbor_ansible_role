@@ -1,0 +1,47 @@
+---
+- name: Ensure install dir
+  become: yes
+  become_user: root
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+  with_items:
+    - "{{ harbor_config_dir }}"
+    - "{{ harbor_config_dir }}/source"
+
+- name: Download Harbor
+  become: yes
+  become_user: root
+  get_url:
+    url: "https://github.com/goharbor/harbor/releases/download/{{ harbor_version }}-rc3/harbor-offline-installer-{{ harbor_version }}-rc3.tgz"
+    dest: "{{ harbor_config_dir }}/harbor.tgz"
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Unzip Harbor
+  become: yes
+  become_user: root
+  unarchive:
+    remote_src: yes
+    src: "{{ harbor_config_dir }}/harbor.tgz"
+    dest: "{{ harbor_config_dir }}/source"
+    creates: "{{ harbor_config_dir }}/source/harbor"
+
+- name: Set harbor.yml
+  become: yes
+  become_user: root
+  template:
+    src: harbor.yml.j2
+    dest: "{{ harbor_config_dir }}/source/harbor/harbor.yml"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Install and Run Harbor
+  become: yes
+  become_user: root
+  shell: "{{ harbor_config_dir }}/source/harbor/install.sh"
