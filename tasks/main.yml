@@ -1,5 +1,4 @@
 ---
-# Main PlayBook
 - name: Ensure install dir
   become: yes
   become_user: root
