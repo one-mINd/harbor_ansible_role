@@ -1,7 +1,0 @@
----
-users:
-- username: example harbor user
-  password: Example12345
-  email: example@gmail.com
-  comment: just an example
-  realname: example

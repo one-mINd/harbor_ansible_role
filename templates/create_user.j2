@@ -1,0 +1,7 @@
+{
+  "username": "{{ item.username }}",
+  "email": "{{ item.email }}",
+  "password": "{{ item.password | default("HarborUser12345") }}",
+  "realname": "{{ item.name | default(item.username) }}",
+  "comment": "{{ item.comment | default('') }}",
+}

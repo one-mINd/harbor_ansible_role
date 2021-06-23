@@ -1,3 +1,15 @@
 ---
 harbor_config_dir: /var/lib/harbor
 harbor_version: "v2.3.0"
+harbor_hostname: harbor.loc
+harbor_admin_password: Harbor12345
+
+connection_protocol: "https"
+# not used when connection_protocol = http
+# the path from which the certificate and key will be downloaded
+remote_certificate_dir: /home/mnhyc-r/Workplace/Ansible_projects/certificates/harbor.loc.crt
+remote_private_key_dir: /home/mnhyc-r/Workplace/Ansible_projects/certificates/harbor.loc.key
+
+harbor_installer_args: "--with-notary --with-trivy"
+
+harbor_users: "{{ lookup('file', 'users.json') }}"
