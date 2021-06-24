@@ -3,6 +3,11 @@ harbor_config_dir: /var/lib/harbor
 harbor_version: "v2.3.0"
 harbor_hostname: harbor.loc
 harbor_admin_password: Harbor12345
+harbor_db_password: root123
+harbor_data_volume: /data
+harbor_logs_volume: /var/log/harbor
+
+trivy_github_token: empty
 
 connection_protocol: "https"
 # not used when connection_protocol = http
@@ -12,4 +17,6 @@ remote_private_key_dir: /home/mnhyc-r/Workplace/Ansible_projects/certificates/ha
 
 harbor_installer_args: "--with-notary --with-trivy"
 
-harbor_users: "{{ lookup('file', 'users.json') }}"
+# harbor_projects: 
+# harbor_members: 
+# harbor_users: 

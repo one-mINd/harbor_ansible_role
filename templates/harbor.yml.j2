@@ -14,8 +14,8 @@ https:
   # https port for harbor, default is 443
   port: 443
   # The path of cert and key files for nginx
-  certificate: "/data/cert/{{ harbor_hostname }}.crt"
-  private_key: "/data/cert/{{ harbor_hostname }}.key"
+  certificate: "{{ harbor_data_volume }}/cert/{{ harbor_hostname }}.crt"
+  private_key: "{{ harbor_data_volume }}/cert/{{ harbor_hostname }}.key"
 
 # # Uncomment following will enable tls communication between all harbor components
 # internal_tls:
@@ -36,7 +36,7 @@ harbor_admin_password: {{ harbor_admin_password }}
 # Harbor DB configuration
 database:
   # The password for the root user of Harbor DB. Change this before any production use.
-  password: root123
+  password: {{ harbor_db_password }}
   # The maximum number of connections in the idle connection pool. If it <=0, no idle connections are retained.
   max_idle_conns: 100
   # The maximum number of open connections to the database. If it <= 0, then there is no limit on the number of open connections.
@@ -44,7 +44,7 @@ database:
   max_open_conns: 900
 
 # The default data volume
-data_volume: /data
+data_volume: {{ harbor_data_volume }}
 
 # Harbor Storage settings by default is using /data dir on local filesystem
 # Uncomment storage_service setting If you want to using external storage
@@ -90,7 +90,7 @@ trivy:
   # You can create a GitHub token by following the instructions in
   # https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
   #
-  # github_token: xxx
+  github_token: {{ trivy_github_token }}
 
 jobservice:
   # Maximum number of job workers in job service
@@ -117,7 +117,7 @@ log:
     # are all valid.
     rotate_size: 200M
     # The directory on your host that store log
-    location: /var/log/harbor
+    location: {{ harbor_logs_volume }}
 
   # Uncomment following lines to enable external syslog endpoint.
   # external_endpoint:
