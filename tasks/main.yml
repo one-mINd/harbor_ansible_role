@@ -74,10 +74,35 @@
     mode: 0644
   when: connection_protocol == "https"
 
-- name: Install and Run Harbor
+- name: Set install script
+  become: yes
+  become_user: root
+  template:
+    src: install.sh.j2
+    dest: "{{ harbor_config_dir }}/source/harbor/install.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Install Harbor
   become: yes
   become_user: root
   shell: "{{ harbor_config_dir }}/source/harbor/install.sh {{ harbor_installer_args }}"
+
+- name: Set docker config
+  become: yes
+  become_user: root
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ harbor_config_dir }}/source/harbor/docker-compose.yml"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Start Harbor
+  community.docker.docker_compose:
+    project_src: "{{ harbor_config_dir }}/source/harbor"
+  register: output
 
 - name: Creating users
   uri:

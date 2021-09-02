@@ -1,22 +1,24 @@
 ---
 harbor_config_dir: /var/lib/harbor
 harbor_version: "v2.3.0"
-harbor_hostname: harbor.loc
-harbor_admin_password: Harbor12345
-harbor_db_password: root123
-harbor_data_volume: /data
+harbor_hostname: 10.0.1.1
+harbor_admin_password: "{{ harbor_encrypted_admin_password | default('pass12345') }}"
+harbor_db_password: "{{ harbor_encrypted_db_password | default('pass12345') }}"
+harbor_data_volume: /data/harbor
 harbor_logs_volume: /var/log/harbor
 
 trivy_github_token: empty
 
-connection_protocol: "https"
+connection_protocol: "http"
+http_port: 8888
+https_port: 443
 # not used when connection_protocol = http
 # the path from which the certificate and key will be downloaded
-remote_certificate_dir: /home/mnhyc-r/Workplace/Ansible_projects/certificates/harbor.loc.crt
-remote_private_key_dir: /home/mnhyc-r/Workplace/Ansible_projects/certificates/harbor.loc.key
+remote_certificate_dir: "{{ harbor_config_dir }}/certificates/{{ harbor_hostname }}.crt"
+remote_private_key_dir: "{{ harbor_config_dir }}/certificates/{{ harbor_hostname }}.key"
 
-harbor_installer_args: "--with-notary --with-trivy"
+harbor_installer_args: ""
 
-# harbor_projects: 
-# harbor_members: 
-# harbor_users: 
+# harbor_projects:
+# harbor_members:
+# harbor_users:
