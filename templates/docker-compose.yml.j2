@@ -26,6 +26,8 @@ services:
     networks:
       harbor:
               #ipv4_address: 12.0.1.1
+    extra_hosts:
+      - "registry.oom.ag:93.157.187.11"
   registry:
     image: goharbor/registry-photon:v2.3.0
     container_name: harbor-registry
@@ -56,6 +58,8 @@ services:
       options:
         syslog-address: "tcp://localhost:1514"
         tag: "registry"
+    extra_hosts:
+          - "registry.oom.ag:93.157.187.11"
   registryctl:
     image: goharbor/harbor-registryctl:v2.3.0
     container_name: registryctl
@@ -88,6 +92,8 @@ services:
       options:
         syslog-address: "tcp://localhost:1514"
         tag: "registryctl"
+    extra_hosts:
+      - "registry.oom.ag:93.157.187.11"
   postgresql:
     image: goharbor/harbor-db:v2.3.0
     container_name: harbor-db
@@ -115,6 +121,8 @@ services:
         syslog-address: "tcp://localhost:1514"
         tag: "postgresql"
     shm_size: '1gb'
+    extra_hosts:
+      - "registry.oom.ag:93.157.187.11"
   core:
     image: goharbor/harbor-core:v2.3.0
     container_name: harbor-core
@@ -156,6 +164,8 @@ services:
       options:
         syslog-address: "tcp://localhost:1514"
         tag: "core"
+    extra_hosts:
+      - "registry.oom.ag:93.157.187.11"
   portal:
     image: goharbor/harbor-portal:v2.3.0
     container_name: harbor-portal
@@ -182,7 +192,8 @@ services:
       options:
         syslog-address: "tcp://localhost:1514"
         tag: "portal"
-
+    extra_hosts:
+      - "registry.oom.ag:93.157.187.11"
   jobservice:
     image: goharbor/harbor-jobservice:v2.3.0
     container_name: harbor-jobservice
@@ -214,6 +225,8 @@ services:
       options:
         syslog-address: "tcp://localhost:1514"
         tag: "jobservice"
+    extra_hosts:
+      - "registry.oom.ag:93.157.187.11"
   redis:
     image: goharbor/redis-photon:v2.3.0
     container_name: redis
@@ -237,6 +250,8 @@ services:
       options:
         syslog-address: "tcp://localhost:1514"
         tag: "redis"
+    extra_hosts:
+      - "registry.oom.ag:93.157.187.11"
   proxy:
     image: goharbor/nginx-photon:v2.3.0
     container_name: nginx
@@ -269,6 +284,8 @@ services:
       options:
         syslog-address: "tcp://localhost:1514"
         tag: "proxy"
+    extra_hosts:
+      - "registry.oom.ag:93.157.187.11"
 networks:
   harbor:
     external:
