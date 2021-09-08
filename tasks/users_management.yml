@@ -1,0 +1,51 @@
+---
+- name: Creating users
+  uri:
+    url: "{{ connection_protocol }}://{{ harbor_hostname }}/api/v2.0/users"
+    validate_certs: no
+    method: POST
+    user: "admin"
+    password: "{{ harbor_admin_password }}"
+    body_format: json
+    force_basic_auth: yes
+    return_content: yes
+    status_code:
+      - 201
+      - 409
+    body: "{{ lookup('template', 'templates/create_user.j2') }}"
+  when: harbor_users is defined
+  with_items: "{{ harbor_users }}"
+
+- name: Creating Projects
+  uri:
+    url: "{{ connection_protocol }}://{{ harbor_hostname }}/api/v2.0/projects"
+    validate_certs: no
+    method: POST
+    user: "admin"
+    password: "{{ harbor_admin_password }}"
+    body_format: json
+    force_basic_auth: yes
+    return_content: yes
+    status_code:
+      - 201
+      - 409
+    body: "{{ lookup('template', 'templates/create_project.j2') }}"
+  when: harbor_projects is defined
+  with_items: "{{ harbor_projects }}"
+
+- name: Creating Members
+  uri:
+    url: "{{ connection_protocol }}://{{ harbor_hostname }}/api/v2.0/projects/{{ item.project }}/members"
+    validate_certs: no
+    method: POST
+    user: "admin"
+    password: "{{ harbor_admin_password }}"
+    body_format: json
+    force_basic_auth: yes
+    return_content: yes
+    status_code:
+      - 201
+      - 409
+    body: "{{ lookup('template', 'templates/create_member.j2') }}"
+  when: harbor_members is defined
+  with_items: "{{ harbor_members }}"
