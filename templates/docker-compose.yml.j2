@@ -278,5 +278,8 @@ services:
       - "{{ harbor_hostname }}:{{ ansible_ip }}"
 networks:
   harbor:
-    external:
-      name: harbor
+    external: false
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.111.0.0/24

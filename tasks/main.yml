@@ -106,6 +106,6 @@
 
 - name: Manage users
   include: users_management
-  when: harbor_users is defined or
-        harbor_projects is defined or
-        harbor_members is defined
+  when: (harbor_users is defined) or
+        (harbor_projects is defined) or
+        (harbor_members is defined)
