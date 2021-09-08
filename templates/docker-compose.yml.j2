@@ -25,7 +25,7 @@ services:
     networks:
       harbor:
     extra_hosts:
-      - "{{ harbor_hostname }}:{{ ansible_host }}"
+      - "{{ harbor_hostname }}:{{ ansible_ip }}"
   registry:
     image: goharbor/registry-photon:v2.3.0
     container_name: harbor-registry
@@ -56,7 +56,7 @@ services:
         syslog-address: "tcp://localhost:1514"
         tag: "registry"
     extra_hosts:
-          - "{{ harbor_hostname }}:{{ ansible_host }}"
+          - "{{ harbor_hostname }}:{{ ansible_ip }}"
   registryctl:
     image: goharbor/harbor-registryctl:v2.3.0
     container_name: registryctl
@@ -89,7 +89,7 @@ services:
         syslog-address: "tcp://localhost:1514"
         tag: "registryctl"
     extra_hosts:
-      - "{{ harbor_hostname }}:{{ ansible_host }}"
+      - "{{ harbor_hostname }}:{{ ansible_ip }}"
   postgresql:
     image: goharbor/harbor-db:v2.3.0
     container_name: harbor-db
@@ -117,7 +117,7 @@ services:
         tag: "postgresql"
     shm_size: '1gb'
     extra_hosts:
-      - "{{ harbor_hostname }}:{{ ansible_host }}"
+      - "{{ harbor_hostname }}:{{ ansible_ip }}"
   core:
     image: goharbor/harbor-core:v2.3.0
     container_name: harbor-core
@@ -159,7 +159,7 @@ services:
         syslog-address: "tcp://localhost:1514"
         tag: "core"
     extra_hosts:
-      - "{{ harbor_hostname }}:{{ ansible_host }}"
+      - "{{ harbor_hostname }}:{{ ansible_ip }}"
   portal:
     image: goharbor/harbor-portal:v2.3.0
     container_name: harbor-portal
@@ -186,7 +186,7 @@ services:
         syslog-address: "tcp://localhost:1514"
         tag: "portal"
     extra_hosts:
-      - "{{ harbor_hostname }}:{{ ansible_host }}"
+      - "{{ harbor_hostname }}:{{ ansible_ip }}"
   jobservice:
     image: goharbor/harbor-jobservice:v2.3.0
     container_name: harbor-jobservice
@@ -218,7 +218,7 @@ services:
         syslog-address: "tcp://localhost:1514"
         tag: "jobservice"
     extra_hosts:
-      - "{{ harbor_hostname }}:{{ ansible_host }}"
+      - "{{ harbor_hostname }}:{{ ansible_ip }}"
   redis:
     image: goharbor/redis-photon:v2.3.0
     container_name: redis
@@ -242,7 +242,7 @@ services:
         syslog-address: "tcp://localhost:1514"
         tag: "redis"
     extra_hosts:
-      - "{{ harbor_hostname }}:{{ ansible_host }}"
+      - "{{ harbor_hostname }}:{{ ansible_ip }}"
   proxy:
     image: goharbor/nginx-photon:v2.3.0
     container_name: nginx
@@ -275,7 +275,7 @@ services:
         syslog-address: "tcp://localhost:1514"
         tag: "proxy"
     extra_hosts:
-      - "{{ harbor_hostname }}:{{ ansible_host }}"
+      - "{{ harbor_hostname }}:{{ ansible_ip }}"
 networks:
   harbor:
     external:
