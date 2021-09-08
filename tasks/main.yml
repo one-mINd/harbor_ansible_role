@@ -50,29 +50,29 @@
     mode: 0755
     owner: root
     group: root
-  when: connection_protocol == "https"
+  when: harbor_connection_protocol == "https"
 
 - name: Copy Certificate
   become: yes
   become_user: root
   copy:
-    src: "{{ remote_certificate_dir }}"
+    src: "{{ harbor_remote_certificate_dir }}"
     dest: "{{ harbor_data_volume }}/cert/{{ harbor_hostname }}.crt"
     owner: root
     group: root
     mode: 0644
-  when: connection_protocol == "https"
+  when: harbor_connection_protocol == "https"
 
 - name: Copy Private Key
   become: yes
   become_user: root
   copy:
-    src: "{{ remote_private_key_dir }}"
+    src: "{{ harbor_remote_private_key_dir }}"
     dest: "{{ harbor_data_volume }}/cert/{{ harbor_hostname }}.key"
     owner: root
     group: root
     mode: 0644
-  when: connection_protocol == "https"
+  when: harbor_connection_protocol == "https"
 
 - name: Set install script
   become: yes

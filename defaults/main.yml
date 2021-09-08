@@ -7,15 +7,15 @@ harbor_db_password: "{{ harbor_encrypted_db_password | default('pass12345') }}"
 harbor_data_volume: /data/harbor
 harbor_logs_volume: /var/log/harbor
 
-trivy_github_token: empty
+harbor_trivy_github_token: empty
 
-connection_protocol: "http"
-http_port: 8888
-https_port: 443
+harbor_connection_protocol: "http"
+harbor_http_port: 8888
+harbor_https_port: 443
 # not used when connection_protocol = http
 # the path from which the certificate and key will be downloaded
-remote_certificate_dir: "{{ harbor_config_dir }}/certificates/{{ harbor_hostname }}.crt"
-remote_private_key_dir: "{{ harbor_config_dir }}/certificates/{{ harbor_hostname }}.key"
+harbor_remote_certificate_dir: "{{ harbor_config_dir }}/certificates/{{ harbor_hostname }}.crt"
+harbor_remote_private_key_dir: "{{ harbor_config_dir }}/certificates/{{ harbor_hostname }}.key"
 
 harbor_installer_args: ""
 

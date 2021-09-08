@@ -12,7 +12,7 @@ http:
 # https related config
 # https:
 #   # https port for harbor, default is 443
-#   port: {{ https_port }}
+#   port: {{ harbor_https_port }}
 #   # The path of cert and key files for nginx
 #   certificate: "{{ harbor_data_volume }}/cert/{{ harbor_hostname }}.crt"
 #   private_key: "{{ harbor_data_volume }}/cert/{{ harbor_hostname }}.key"
@@ -90,7 +90,7 @@ data_volume: {{ harbor_data_volume }}
 #  # You can create a GitHub token by following the instructions in
 #  # https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
 #  #
-#  github_token: {{ trivy_github_token }}
+#  github_token: {{ harbor_trivy_github_token }}
 
 jobservice:
   # Maximum number of job workers in job service

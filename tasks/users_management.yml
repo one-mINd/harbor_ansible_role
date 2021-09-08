@@ -1,7 +1,7 @@
 ---
 - name: Creating users
   uri:
-    url: "{{ connection_protocol }}://{{ harbor_hostname }}/api/v2.0/users"
+    url: "{{ harbor_connection_protocol }}://{{ harbor_hostname }}/api/v2.0/users"
     validate_certs: no
     method: POST
     user: "admin"
@@ -18,7 +18,7 @@
 
 - name: Creating Projects
   uri:
-    url: "{{ connection_protocol }}://{{ harbor_hostname }}/api/v2.0/projects"
+    url: "{{ harbor_connection_protocol }}://{{ harbor_hostname }}/api/v2.0/projects"
     validate_certs: no
     method: POST
     user: "admin"
@@ -35,7 +35,7 @@
 
 - name: Creating Members
   uri:
-    url: "{{ connection_protocol }}://{{ harbor_hostname }}/api/v2.0/projects/{{ item.project }}/members"
+    url: "{{ harbor_connection_protocol }}://{{ harbor_hostname }}/api/v2.0/projects/{{ item.project }}/members"
     validate_certs: no
     method: POST
     user: "admin"

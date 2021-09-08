@@ -263,7 +263,7 @@ services:
       harbor:
     dns_search: .
     ports:
-      - {{ http_port }}:8080
+      - {{ harbor_http_port }}:8080
     depends_on:
       - registry
       - core
