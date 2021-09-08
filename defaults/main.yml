@@ -1,7 +1,7 @@
 ---
 harbor_config_dir: /var/lib/harbor
 harbor_version: "v2.3.0"
-harbor_hostname: registry.oom.ag
+harbor_hostname: "{{ hostname }}"
 harbor_admin_password: "{{ harbor_encrypted_admin_password | default('pass12345') }}"
 harbor_db_password: "{{ harbor_encrypted_db_password | default('pass12345') }}"
 harbor_data_volume: /data/harbor
