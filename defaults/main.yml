@@ -2,8 +2,8 @@
 harbor_config_dir: /var/lib/harbor
 harbor_version: "v2.3.0"
 harbor_hostname: localhost # you must change this variable before start playbook!!!!
-harbor_admin_password: "{{ harbor_encrypted_admin_password | default('pass12345') }}"
-harbor_db_password: "{{ harbor_encrypted_db_password | default('pass12345') }}"
+harbor_admin_password: "{{ vault_harbor_admin_password  | default('pass12345') }}"
+harbor_db_password: "{{ vault_harbor_db_password  | default('pass12345') }}"
 harbor_data_volume: /data/harbor
 harbor_logs_volume: /var/log/harbor
 
@@ -19,6 +19,20 @@ harbor_remote_private_key_dir: "{{ harbor_config_dir }}/certificates/{{ harbor_h
 
 harbor_installer_args: ""
 
+harbor_install: "no"
+
 # harbor_projects:
 # harbor_members:
 # harbor_users:
+#   - fisrst_user:
+#     username: "user_one"
+#     email: "email@mail.com"
+#     password: "HarborUser12345"
+#     realname: "user one"
+#     comment: "void"
+#   - second_user:
+#     username: "second_one"
+#     email: "email_two@mail.com"
+#     password: "HarborUser12345"
+#     realname: "user two"
+#     comment: "void"
