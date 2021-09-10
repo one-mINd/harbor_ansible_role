@@ -23,7 +23,8 @@ services:
       harbor:
     dns_search: .
     extra_hosts:
-          - "{{ harbor_hostname }}:{{ ansible_ip }}"  registryctl:
+          - "{{ harbor_hostname }}:{{ ansible_ip }}"
+  registryctl:
     image: goharbor/harbor-registryctl:v2.3.0
     container_name: registryctl
     env_file:
