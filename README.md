@@ -21,20 +21,20 @@ harbor_http_port and harbor_https_port - http/https ports
 harbor_remote_certificate_dir and harbor_remote_private_key_dir dirs where certificates for harbor stored.
 
 harbor_users - list of users to be created
-   - username
-   - email
-   - password
-   - realname
-   - comment
+   username
+   email
+   password
+   realname
+   comment
 
 harbor_projects - list of projects to be created
-    - project_name 
-    - public (true/false)
+    project_name 
+    public (true/false)
     
 harbor_members - list of members in projects to be created
-   - project (existing project)
-   - role_id (1/2/3)
-   - username (existing user)
+   project (existing project)
+   role_id (1/2/3)
+   username (existing user)
 
 
 Example Playbook
