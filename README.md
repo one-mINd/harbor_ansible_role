@@ -39,12 +39,15 @@ harbor_members - list of members in projects to be created
 
 Example Playbook
 ----------------
+`
 Deploy Harbor
     - hosts: servers
       roles:
          - one_mind.harbor_ansible_role
        tags: install
-       
+`
+
+`
 Create users, projects and members
     - hosts: servers
       roles:
@@ -74,6 +77,7 @@ Create users, projects and members
              password: "harboruser12345"
              realname: "user two"
              comment: "void"
+`
 
 More info
 ----------------
