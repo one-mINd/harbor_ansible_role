@@ -1,31 +1,5 @@
 version: '2.3'
 services:
-  registry:
-    image: goharbor/registry-photon:v2.3.0
-    container_name: harbor-registry
-    restart: always
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
-    volumes:
-      - {{harbor_data_volume }}/registry:/storage:z
-      - ./common/config/registry/:/etc/registry/:z
-      - type: bind
-        source: {{harbor_data_volume }}/secret/registry/root.crt
-        target: /etc/registry/root.crt
-      - type: bind
-        source: ./common/config/shared/trust-certificates
-        target: /harbor_cust_cert
-    networks:
-      harbor:
-    dns_search: .
-    depends_on:
-      - log
-    extra_hosts:
-          - "{{ harbor_hostname }}:{{ ansible_ip }}"
   registryctl:
     image: goharbor/harbor-registryctl:v2.3.0
     container_name: registryctl
@@ -50,8 +24,6 @@ services:
     networks:
       harbor:
     dns_search: .
-    depends_on:
-      - log
     extra_hosts:
       - "{{ harbor_hostname }}:{{ ansible_ip }}"
   postgresql:
@@ -72,8 +44,6 @@ services:
     dns_search: .
     env_file:
       - ./common/config/db/env
-    depends_on:
-      - log
     extra_hosts:
       - "{{ harbor_hostname }}:{{ ansible_ip }}"
   core:
@@ -107,7 +77,6 @@ services:
       harbor:
     dns_search: .
     depends_on:
-      - log
       - registry
       - redis
       - postgresql
@@ -131,8 +100,6 @@ services:
     networks:
       harbor:
     dns_search: .
-    depends_on:
-      - log
     extra_hosts:
       - "{{ harbor_hostname }}:{{ ansible_ip }}"
   jobservice:
@@ -158,8 +125,6 @@ services:
     networks:
       harbor:
     dns_search: .
-    depends_on:
-      - core
     extra_hosts:
       - "{{ harbor_hostname }}:{{ ansible_ip }}"
   redis:
@@ -177,8 +142,6 @@ services:
     networks:
       harbor:
     dns_search: .
-    depends_on:
-      - log
     extra_hosts:
       - "{{ harbor_hostname }}:{{ ansible_ip }}"
   proxy:
@@ -206,7 +169,6 @@ services:
       - registry
       - core
       - portal
-      - log
     extra_hosts:
       - "{{ harbor_hostname }}:{{ ansible_ip }}"
 networks:
