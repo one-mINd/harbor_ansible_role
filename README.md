@@ -9,7 +9,7 @@ Tags
 **install**
   Download and install Harbor on target host.
   
-**Users**
+**users**
   Start a users managment scripts. Vars harbor_projects, harbor_members or harbor_users mast be defined.
 
 
@@ -27,21 +27,21 @@ Role Variables
 
 **harbor_remote_certificate_dir** and **harbor_remote_private_key_dir** dirs where certificates for harbor stored.
 
-- *harbor_users* - list of users to be created
-   - username
-   - email
-   - password
-   - realname
-   - comment
+**harbor_users** - list of users to be created
+ - username
+ - email
+ - password
+ - realname
+ - comment
 
-- *harbor_projects* - list of projects to be created
-    - project_name 
-    - public (true/false)
+**harbor_projects** - list of projects to be created
+ - project_name 
+ - public (true/false)
     
-- *harbor_members* - list of members in projects to be created
-   - project (existing project)
-   - role_id (1/2/3)
-   - username (existing user)
+**harbor_members** - list of members in projects to be created
+ - project (existing project)
+ - role_id (1/2/3)
+ - username (existing user)
 
 
 Example Playbook
