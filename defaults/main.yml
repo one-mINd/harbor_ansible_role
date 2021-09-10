@@ -19,10 +19,22 @@ harbor_remote_private_key_dir: "{{ harbor_config_dir }}/certificates/{{ harbor_h
 
 harbor_installer_args: ""
 
-harbor_install: "no"
-
 # harbor_projects:
+#   - first_project:
+#     project_name: "firstproject"
+#     public: "true"
+#   - first_project:
+#     project_name: "secondproject"
+#     public: "false"
 # harbor_members:
+#     - first_member:
+#       project: "firstproject"
+#       role_id: 1
+#       username: "user_one"
+#     - second_member:
+#       project: "secondproject"
+#       role_id: 2
+#       username: "second_one"
 # harbor_users:
 #   - fisrst_user:
 #     username: "user_one"

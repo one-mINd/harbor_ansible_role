@@ -1,10 +1,11 @@
 ---
 - name: Install Harbor
   include: install.yml
-  when: harbor_install=="yes"
+  tags: install
 
 - name: Manage users
   include: users_management.yml
   when: (harbor_users is defined) or
         (harbor_projects is defined) or
         (harbor_members is defined)
+  tags: manage_users

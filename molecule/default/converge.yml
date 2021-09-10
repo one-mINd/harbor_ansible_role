@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include harbor_ansible_role"
+      include_role:
+        name: "harbor_ansible_role"
+      vars:
+        harbor_hostname: {{ ansible_default_ipv4.address }}
+        harbor_http_port: 80
