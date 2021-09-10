@@ -1,38 +1,80 @@
-Role Name
+one_mind.harbor_ansible_role
 =========
 
-A brief description of the role goes here.
+Ansible role to deploy Harbor registry server and manage users, projects and members.
 
-Requirements
-------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Tags
+--------------
+- install
+  Download and install Harbor on target host.
+- Users
+  Start a users managment scripts. Vars harbor_projects, harbor_members or harbor_users mast be defined.
 
 Role Variables
 --------------
+harbor_hostname - This var must be overwritten, because by default it localhost, but Harbor can't work on that hostname.
+harbor_admin_password and harbor_db_password must be overwritten to :)
+harbor_config_dir - place where harbor installation scripts and docker-compose.yml will be stored.
+harbor_connection_protocol - can be http or https. When value is http secure connection will not configure, and Harbor will be available only on http port.
+harbor_http_port and harbor_https_port - http/https ports
+harbor_remote_certificate_dir and harbor_remote_private_key_dir dirs where certificates for harbor stored.
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+harbor_users - list of users to be created
+   - username
+   - email
+   - password
+   - realname
+   - comment
 
-Dependencies
-------------
+harbor_projects - list of projects to be created
+    - project_name 
+    - public (true/false)
+    
+harbor_members - list of members in projects to be created
+   - project (existing project)
+   - role_id (1/2/3)
+   - username (existing user)
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
 
 Example Playbook
 ----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
+Deploy Harbor
     - hosts: servers
       roles:
-         - { role: username.rolename, x: 42 }
+         - one_mind.harbor_ansible_role
+       tags: install
+       
+Create users, projects and members
+    - hosts: servers
+      roles:
+         - one_mind.harbor_ansible_role
+       tags: users
+       vars:
+         harbor_projects:
+           - project_name: "firstproject"
+             public: "true"
+           - project_name: "secondproject"
+             public: "false"
+         harbor_members: 
+           - project: "firstproject"
+             role_id: 1
+             username: "user_one"
+           - project: "secondproject"
+             role_id: 2
+             username: "second_one"
+         harbor_users:
+           - username: "user_one"
+             email: "email@mail.com"
+             password: "harboruser12345"
+             realname: "user one"
+             comment: "void"
+           - username: "second_one"
+             email: "email_two@mail.com"
+             password: "harboruser12345"
+             realname: "user two"
+             comment: "void"
 
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+More info
+----------------
+Official docs - https://goharbor.io/docs/2.3.0/
