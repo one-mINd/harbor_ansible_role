@@ -31,7 +31,7 @@ harbor_installer_args: ""
 #   - project: "secondproject"
 #     role_id: 2
 #     username: "second_one"
-# harbor_users: []
+# harbor_users:
 #   - username: "user_one"
 #     email: "email@mail.com"
 #     password: "HarborUser12345"

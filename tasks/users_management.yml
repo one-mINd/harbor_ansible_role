@@ -13,6 +13,10 @@
       - 201
       - 409
     body: "{{ lookup('template', 'templates/create_user.j2') }}"
+  register: _result
+  retries: 5
+  delay: 10
+  until: (_result.status == 201) or (_result.status == 409)
   when: harbor_users is defined
   with_items: "{{ harbor_users }}"
 
@@ -30,6 +34,10 @@
       - 201
       - 409
     body: "{{ lookup('template', 'templates/create_project.j2') }}"
+  register: _result
+  retries: 5
+  delay: 10
+  until: (_result.status == 201) or (_result.status == 409)
   when: harbor_projects is defined
   with_items: "{{ harbor_projects }}"
 
@@ -47,5 +55,9 @@
       - 201
       - 409
     body: "{{ lookup('template', 'templates/create_member.j2') }}"
+  register: _result
+  retries: 5
+  delay: 10
+  until: (_result.status == 201) or (_result.status == 409)
   when: harbor_members is defined
   with_items: "{{ harbor_members }}"

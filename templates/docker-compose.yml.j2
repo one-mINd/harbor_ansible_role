@@ -22,8 +22,6 @@ services:
     networks:
       harbor:
     dns_search: .
-    extra_hosts:
-          - "{{ harbor_hostname }}:{{ ansible_ip }}"
   registryctl:
     image: goharbor/harbor-registryctl:v2.3.0
     container_name: registryctl
@@ -48,8 +46,6 @@ services:
     networks:
       harbor:
     dns_search: .
-    extra_hosts:
-      - "{{ harbor_hostname }}:{{ ansible_ip }}"
   postgresql:
     image: goharbor/harbor-db:v2.3.0
     container_name: harbor-db
@@ -68,8 +64,6 @@ services:
     dns_search: .
     env_file:
       - ./common/config/db/env
-    extra_hosts:
-      - "{{ harbor_hostname }}:{{ ansible_ip }}"
   core:
     image: goharbor/harbor-core:v2.3.0
     container_name: harbor-core
@@ -104,8 +98,6 @@ services:
       - registry
       - redis
       - postgresql
-    extra_hosts:
-      - "{{ harbor_hostname }}:{{ ansible_ip }}"
   portal:
     image: goharbor/harbor-portal:v2.3.0
     container_name: harbor-portal
@@ -124,8 +116,6 @@ services:
     networks:
       harbor:
     dns_search: .
-    extra_hosts:
-      - "{{ harbor_hostname }}:{{ ansible_ip }}"
   jobservice:
     image: goharbor/harbor-jobservice:v2.3.0
     container_name: harbor-jobservice
@@ -149,8 +139,6 @@ services:
     networks:
       harbor:
     dns_search: .
-    extra_hosts:
-      - "{{ harbor_hostname }}:{{ ansible_ip }}"
   redis:
     image: goharbor/redis-photon:v2.3.0
     container_name: redis
@@ -166,8 +154,6 @@ services:
     networks:
       harbor:
     dns_search: .
-    extra_hosts:
-      - "{{ harbor_hostname }}:{{ ansible_ip }}"
   proxy:
     image: goharbor/nginx-photon:v2.3.0
     container_name: nginx
@@ -193,8 +179,6 @@ services:
       - registry
       - core
       - portal
-    extra_hosts:
-      - "{{ harbor_hostname }}:{{ ansible_ip }}"
 networks:
   harbor:
     external: false
