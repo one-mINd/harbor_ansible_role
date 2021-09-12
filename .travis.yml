@@ -5,7 +5,7 @@ dist: focal
 install:
   # Install test dependencies.
   # Install libvrt & KVM 
-  - sudo apt-get update && sudo apt-get install -y bridge-utils dnsmasq-base ebtables libvirt-bin libvirt-dev qemu-kvm qemu-utils ruby-dev
+  - sudo apt-get update && sudo apt-get install -y bridge-utils dnsmasq-base ebtables libvirt-daemon-system libvirt-clients libvirt-dev qemu-kvm qemu-utils ruby-dev
 
   # Download Vagrant & Install Vagrant package
   - sudo wget -nv https://releases.hashicorp.com/vagrant/2.2.14/vagrant_2.2.14_x86_64.deb
