@@ -16,11 +16,11 @@ install:
   - sudo vagrant plugin install vagrant-libvirt 
 
   # Install python dependensys
-  - pip3 install molecule[vagrant] molecule-vagrant python-vagrant yamllint ansible-lint ansible
+  - sudo pip3 install molecule[vagrant] molecule-vagrant python-vagrant yamllint ansible-lint ansible
 
 script:
   # Run tests.
-  - molecule test
+  - sudo molecule test
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/?branch=master
