@@ -47,43 +47,33 @@ Role Variables
 Example Playbook
 ----------------
 ```
-Deploy Harbor
-    - hosts: servers
-      roles:
-         - one_mind.harbor_ansible_role
-       tags: install
-```
-
-```
-Create users, projects and members
-    - hosts: servers
-      roles:
-         - one_mind.harbor_ansible_role
-       tags: users
-       vars:
-         harbor_projects:
-           - project_name: "firstproject"
-             public: "true"
-           - project_name: "secondproject"
-             public: "false"
-         harbor_members: 
-           - project: "firstproject"
-             role_id: 1
-             username: "user_one"
-           - project: "secondproject"
-             role_id: 2
-             username: "second_one"
-         harbor_users:
-           - username: "user_one"
-             email: "email@mail.com"
-             password: "harboruser12345"
-             realname: "user one"
-             comment: "void"
-           - username: "second_one"
-             email: "email_two@mail.com"
-             password: "harboruser12345"
-             realname: "user two"
-             comment: "void"
+- hosts: servers
+  roles:
+      - one_mind.harbor_ansible_role
+    vars:
+      harbor_projects:
+        - project_name: "firstproject"
+          public: "true"
+        - project_name: "secondproject"
+          public: "false"
+      harbor_members: 
+        - project: "firstproject"
+          role_id: 1
+          username: "user_one"
+        - project: "secondproject"
+          role_id: 2
+          username: "second_one"
+      harbor_users:
+        - username: "user_one"
+          email: "email@mail.com"
+          password: "harboruser12345"
+          realname: "user one"
+          comment: "void"
+        - username: "second_one"
+          email: "email_two@mail.com"
+          password: "harboruser12345"
+          realname: "user two"
+          comment: "void"
 ```
 
 More info

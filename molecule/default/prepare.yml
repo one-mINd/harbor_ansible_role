@@ -1,10 +1,11 @@
 ---
 - name: Prepare
   hosts: all
+  become: true
   tasks:
     - name: Install required system packages
-      apt: name={{ item }} state=latest update_cache=yes
-      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools', 'gpg-agent', 'bash']
+      apt: name={{ item }} state=present update_cache=yes
+      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools', 'gpg-agent']
 
     - name: Add Docker GPG apt Key
       apt_key:
@@ -17,8 +18,17 @@
         state: present
 
     - name: Update apt and install docker-ce
-      apt: update_cache=yes name=docker-ce state=latest
+      apt: update_cache=yes name=docker-ce state=present
 
     - name: Install Docker Module for Python
-      pip: name={{ item }}
-      loop: ['docker', 'docker-compose']
+      pip:
+        name: "{{ item }}"
+      with_items:
+        - docker
+        - docker-compose
+
+    - name: Ensure docker deamon is running
+      become: true
+      service:
+        name: docker
+        state: started
