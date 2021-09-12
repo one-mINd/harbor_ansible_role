@@ -5,7 +5,7 @@
   tasks:
     - name: "Include harbor_ansible_role"
       include_role:
-        name: "harbor"
+        name: "harbor_ansible_role"
       vars:
         harbor_projects:
           - project_name: "firstproject"
