@@ -1,9 +1,9 @@
 ---
-language: python
+language: python3
 
 install:
   # Install test dependencies.
-  - pip install molecule[vagrant] virtualbox yamllint ansible-lint ansible
+  - pip3 install molecule[vagrant] molecule-vagrant virtualbox yamllint ansible-lint ansible
 
 script:
   # Run tests.
