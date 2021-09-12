@@ -1,11 +1,21 @@
 ---
 language: python3
+dist: focal
 
 install:
   # Install test dependencies.
-  - curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-  - sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-  - sudo apt-get update && sudo apt-get install vagrant virtualbox 
+  # Install libvrt & KVM 
+  - sudo apt-get update && sudo apt-get install -y bridge-utils dnsmasq-base ebtables libvirt-bin libvirt-dev qemu-kvm qemu-utils ruby-dev
+
+  # Download Vagrant & Install Vagrant package
+  - sudo wget -nv https://releases.hashicorp.com/vagrant/2.2.14/vagrant_2.2.14_x86_64.deb
+  - sudo dpkg -i vagrant_2.2.14_x86_64.deb
+  - vagrant --version
+
+  # Install vagrant-libvirt Vagrant plugin
+  - sudo vagrant plugin install vagrant-libvirt 
+
+  # Install python dependensys
   - pip3 install molecule[vagrant] molecule-vagrant python-vagrant yamllint ansible-lint ansible
 
 script:

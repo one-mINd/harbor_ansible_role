@@ -4,10 +4,10 @@ dependency:
 driver:
   name: vagrant
   provider:
-    name: virtualbox
+    name: libvirt
 platforms:
   - name: instance
-    box: ubuntu/focal64
+    box: generic/ubuntu2004
     instance_raw_config_args:
       - "vm.network 'forwarded_port', guest: 80, host: 8088"
     memory: 2048
