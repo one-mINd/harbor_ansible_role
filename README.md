@@ -51,6 +51,8 @@ Example Playbook
   roles:
       - one_mind.harbor_ansible_role
     vars:
+    
+      # create
       harbor_projects:
         - project_name: "firstproject"
           public: "true"
@@ -74,6 +76,26 @@ Example Playbook
           password: "harboruser12345"
           realname: "user two"
           comment: "void"
+          
+        # get
+        harbor_get_users: yes
+        harbor_get_projects: yes
+        harbor_get_members:
+          - project_id: firstproject
+          - project_id: secondproject
+        
+        # remove
+        harbor_remove_users:
+          - user_id: 1
+          - user_id: 2
+        harbor_remove_members:
+          - project_id: 1
+            member_id: 1
+          - project_id: 2
+            member_id: 2
+        harbor_remove_projects:
+          - project_id: 1
+          - project_id: 2
 ```
 
 More info
