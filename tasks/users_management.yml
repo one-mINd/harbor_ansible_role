@@ -13,7 +13,7 @@
     status_code:
       - 201
       - 409
-    body: "{{ lookup('template', 'templates/create_user.j2') }}"
+    body: "{{ lookup('template', 'templates/api_templates/create_user.j2') }}"
   register: _result
   retries: 5
   delay: 10
@@ -35,7 +35,7 @@
     status_code:
       - 201
       - 409
-    body: "{{ lookup('template', 'templates/create_project.j2') }}"
+    body: "{{ lookup('template', 'templates/api_templates/create_project.j2') }}"
   register: _result
   retries: 5
   delay: 10
@@ -57,10 +57,121 @@
     status_code:
       - 201
       - 409
-    body: "{{ lookup('template', 'templates/create_member.j2') }}"
+    body: "{{ lookup('template', 'templates/api_templates/create_member.j2') }}"
   register: _result
   retries: 5
   delay: 10
   until: (_result.status == 201) or (_result.status == 409)
   when: harbor_members is defined
   with_items: "{{ harbor_members }}"
+
+- name: Get list users
+  no_log: true
+  uri:
+    url: "{{ harbor_connection_protocol }}://{{ harbor_hostname }}/api/v2.0/users"
+    validate_certs: no
+    method: GET
+    user: "admin"
+    body_format: json
+    password: "{{ harbor_admin_password }}"
+    force_basic_auth: yes
+    return_content: yes
+    status_code: 200
+  register: _result
+  retries: 5
+  delay: 10
+  until: _result.status == 200
+  when: harbor_get_users is defined
+
+- name: List of users
+  debug:
+    msg: "{{ _result.content  }}"
+  when: harbor_get_users is defined
+
+- name: Get list projects
+  no_log: true
+  uri:
+    url: "{{ harbor_connection_protocol }}://{{ harbor_hostname }}/api/v2.0/projects"
+    validate_certs: no
+    method: GET
+    user: "admin"
+    body_format: json
+    password: "{{ harbor_admin_password }}"
+    force_basic_auth: yes
+    return_content: yes
+    status_code: 200
+  register: _result
+  retries: 5
+  delay: 10
+  until: _result.status == 200
+  when: harbor_get_projects is defined
+
+- name: List of projects
+  debug:
+    msg: "{{ _result.content  }}"
+  when: harbor_get_projects is defined
+
+- name: Get list members of projects
+  include_tasks: get_members.yml  
+  when: harbor_get_members is defined
+  with_items: "{{ harbor_get_members }}"
+
+- name: Remove users
+  no_log: true
+  uri:
+    url: "{{ harbor_connection_protocol }}://{{ harbor_hostname }}/api/v2.0/users/{{ item.user_id }}"
+    validate_certs: no
+    method: DELETE
+    user: "admin"
+    password: "{{ harbor_admin_password }}"
+    body_format: json
+    force_basic_auth: yes
+    return_content: yes
+    status_code:
+      - 200
+  register: _result
+  retries: 5
+  delay: 10
+  until: _result.status == 200
+  when: harbor_remove_users is defined
+  with_items: "{{ harbor_remove_users }}"
+
+- name: Remove projects
+  no_log: true
+  uri:
+    url: "{{ harbor_connection_protocol }}://{{ harbor_hostname }}/api/v2.0/projects/{{ item.project_id }}"
+    validate_certs: no
+    method: DELETE
+    user: "admin"
+    password: "{{ harbor_admin_password }}"
+    body_format: json
+    force_basic_auth: yes
+    return_content: yes
+    status_code:
+      - 200
+  register: _result
+  retries: 5
+  delay: 10
+  until: _result.status == 200
+  when: harbor_remove_projects is defined
+  with_items: "{{ harbor_remove_projects }}"
+
+- name: Remove members
+  no_log: true
+  uri:
+    url: "{{ harbor_connection_protocol }}://{{ harbor_hostname }}/api/v2.0/projects/{{ item.project_id }}/members/{{ item.member_id }}"
+    validate_certs: no
+    method: DELETE
+    user: "admin"
+    password: "{{ harbor_admin_password }}"
+    body_format: json
+    force_basic_auth: yes
+    return_content: yes
+    status_code:
+      - 200
+  register: _result
+  retries: 5
+  delay: 10
+  until: _result.status == 200
+  when: harbor_remove_members is defined
+  with_items: "{{ harbor_remove_members }}"

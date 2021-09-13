@@ -30,3 +30,8 @@
             password: "Harboruser12345"
             realname: "user two"
             comment: "void"
+        harbor_get_users: yes
+        harbor_get_projects: yes
+        harbor_get_members:
+          - project_id: firstproject 
+          - project_id: secondproject

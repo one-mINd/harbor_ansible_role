@@ -1,0 +1,21 @@
+---
+- name: Get list members of project
+  no_log: true
+  uri:
+      url: "{{ harbor_connection_protocol }}://{{ harbor_hostname }}/api/v2.0/projects/{{ item.project_id }}/members"
+      validate_certs: no
+      method: GET
+      user: "admin"
+      body_format: json
+      password: "{{ harbor_admin_password }}"
+      force_basic_auth: yes
+      return_content: yes
+      status_code: 200
+  register: _result
+  retries: 5
+  delay: 10
+  until: _result.status == 200
+
+- name: List of members
+  debug:
+    msg: "{{ _result.content }}"
