@@ -43,6 +43,22 @@ Role Variables
  - role_id (1/2/3)
  - username (existing user)
 
+**harbor_get_users** - get all users in harbor
+
+**harbor_get_projects** - get all projects
+
+**harbor_get_members** - get all members in project
+ - project_id (project name or id)
+
+**harbor_remove_users** - list of users ids to be removed
+ - user_id
+ 
+ **harbor_remove_members** - list of members to be removed from project 
+ - project_id 
+   member_id
+        
+**harbor_remove_projects** - list of projects to be removed
+ - project_id
 
 Example Playbook
 ----------------
