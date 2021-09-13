@@ -112,7 +112,7 @@
   when: harbor_get_projects is defined
 
 - name: Get list members of projects
-  include_tasks: get_members.yml  
+  include_tasks: get_members.yml
   when: harbor_get_members is defined
   with_items: "{{ harbor_get_members }}"
 
