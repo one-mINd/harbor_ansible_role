@@ -4,5 +4,5 @@
   tags: install
 
 - name: Manage users
-  include: users_management.yml
+  include: new_users_management.yml
   tags: users

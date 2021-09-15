@@ -1,8 +1,8 @@
 ---
 - name: Get list members of project
-  no_log: true
+  # no_log: true
   uri:
-      url: "{{ harbor_connection_protocol }}://{{ harbor_hostname }}/api/v2.0/projects/{{ item.project_id }}/members"
+      url: "{{ harbor_connection_protocol }}://{{ harbor_hostname }}/api/v2.0/projects/{{ item.project_name }}/members"
       validate_certs: no
       method: GET
       user: "admin"
@@ -11,11 +11,21 @@
       force_basic_auth: yes
       return_content: yes
       status_code: 200
-  register: _result
+  register: _list_members
   retries: 5
   delay: 10
-  until: _result.status == 200
+  until: _list_members.status == 200
 
-- name: List of members
+- name: Push members to list
+  set_fact:
+    harbor_list_members: "{{ harbor_list_members | combine([{ item.project_name: _list_members.json }]) }}"
+  when: harbor_list_members is defined
+
+- name: Push members to list
+  set_fact:
+    harbor_list_members: "{{ [{ item.project_name: _list_members.json }] }}"
+  when: harbor_list_members is undefined
+
+- name: debug output
   debug:
-    msg: "{{ _result.content }}"
+    msg: "{{ harbor_list_members }}"

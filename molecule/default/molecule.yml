@@ -27,5 +27,8 @@ scenario:
     - destroy
 provisioner:
   name: ansible
+  config_options:
+    defaults:
+      stdout_callback: yaml
 verifier:
   name: ansible

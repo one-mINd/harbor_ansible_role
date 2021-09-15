@@ -1,0 +1,11 @@
+---
+- name: TEST
+  debug:
+    # msg: "{{ harbor_list_members | json_query(query) }} --- {{ harbor_users | json_query('[*].projects[*].project_name') }}"
+    msg: "{{ harbor_project_members }}"
+
+- name: TEST
+  debug:
+    # msg: "{{ harbor_list_members | json_query(query) }} --- {{ harbor_users | json_query('[*].projects[*].project_name') }}"
+    msg: "{{ item }}"
+  with_items: "{{ harbor_project_members }}"
