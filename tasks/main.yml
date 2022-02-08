@@ -6,3 +6,7 @@
 - name: Manage users
   include: users_management.yml
   tags: users
+
+- name: Install aquasec trivy
+  include: aquasec_trivy.yml
+  tags: aquasec_trivy

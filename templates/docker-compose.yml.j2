@@ -179,6 +179,20 @@ services:
       - registry
       - core
       - portal
+{% if harbor_trivy_aquasec is defined and harbor_trivy_aquasec | bool %}
+  aquasec-trivy:
+    image: aquasec/harbor-scanner-trivy:0.25.0
+    container_name: aquasec-trivy
+    restart: always
+    networks:
+      harbor:
+    dns_search: .
+    environment:
+      SCANNER_REDIS_URL: redis://redis
+    depends_on:
+      - core
+      - redis
+{% endif %}
 networks:
   harbor:
     external: false
