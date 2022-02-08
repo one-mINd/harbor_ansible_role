@@ -20,6 +20,11 @@ harbor_remote_private_key_dir: "{{ harbor_config_dir }}/certificates/{{ harbor_h
 
 harbor_installer_args: ""
 harbor_force_install: false
+harbor_trivy_aquasec: false
+
+harbor_projects: false
+harbor_members: false
+harbor_users: false
 
 # harbor_projects: []
 #   - project_name: "firstproject"
