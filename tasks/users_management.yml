@@ -81,12 +81,12 @@
   retries: 5
   delay: 10
   until: _result.status == 200
-  when: harbor_get_users is defined
+  when: harbor_get_users is defined and harbor_get_users | bool
 
 - name: List of users
   debug:
     msg: "{{ _result.content  }}"
-  when: harbor_get_users is defined
+  when: harbor_get_users is defined and harbor_get_users | bool
 
 - name: Get list projects
   no_log: true
@@ -104,12 +104,12 @@
   retries: 5
   delay: 10
   until: _result.status == 200
-  when: harbor_get_projects is defined
+  when: harbor_get_projects is defined and harbor_get_projects | bool
 
 - name: List of projects
   debug:
     msg: "{{ _result.content  }}"
-  when: harbor_get_projects is defined
+  when: harbor_get_projects is defined and harbor_get_projects | bool
 
 - name: Get list members of projects
   include_tasks: get_members.yml

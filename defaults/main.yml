@@ -1,7 +1,8 @@
 ---
 harbor_config_dir: /var/lib/harbor
 harbor_version: "v2.3.0"
-harbor_hostname: localhost      # you must change this variable before start playbook!!!!
+harbor_hostname: localhost            # you must change this variable before start playbook!!!!
+harbor_external_url: http://localhost # you must change this variable before start playbook!!!!
 harbor_admin_password: pass12345
 harbor_db_password: pass12345
 harbor_data_volume: /data/harbor
@@ -18,6 +19,7 @@ harbor_remote_certificate_dir: "{{ harbor_config_dir }}/certificates/{{ harbor_h
 harbor_remote_private_key_dir: "{{ harbor_config_dir }}/certificates/{{ harbor_hostname }}.key"
 
 harbor_installer_args: ""
+harbor_force_install: false
 
 # harbor_projects: []
 #   - project_name: "firstproject"

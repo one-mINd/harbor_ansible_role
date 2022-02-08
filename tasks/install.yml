@@ -84,10 +84,16 @@
     group: root
     mode: 0755
 
+- name: Check that the Harbor already installed
+  stat:
+    path: "{{ harbor_data_volume }}/registry"
+  register: installed_result
+
 - name: Install Harbor
   become: yes
   become_user: root
   shell: "{{ harbor_config_dir }}/source/harbor/install.sh {{ harbor_installer_args }}"
+  when: (harbor_force_install is defined and harbor_force_install | bool) or not installed_result.stat.exists
 
 - name: Set docker config
   become: yes
