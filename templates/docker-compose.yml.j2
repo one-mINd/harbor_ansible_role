@@ -21,7 +21,6 @@ services:
         target: /harbor_cust_cert
     networks:
       harbor:
-    dns_search: .
   registryctl:
     image: goharbor/harbor-registryctl:v2.3.0
     container_name: registryctl
@@ -45,7 +44,6 @@ services:
         target: /harbor_cust_cert
     networks:
       harbor:
-    dns_search: .
   postgresql:
     image: goharbor/harbor-db:v2.3.0
     container_name: harbor-db
@@ -61,7 +59,6 @@ services:
       - {{harbor_data_volume }}/database:/var/lib/postgresql/data:z
     networks:
       harbor:
-    dns_search: .
     env_file:
       - ./common/config/db/env
   core:
@@ -93,7 +90,6 @@ services:
         target: /harbor_cust_cert
     networks:
       harbor:
-    dns_search: .
     depends_on:
       - registry
       - redis
@@ -115,7 +111,6 @@ services:
         target: /etc/nginx/nginx.conf
     networks:
       harbor:
-    dns_search: .
   jobservice:
     image: goharbor/harbor-jobservice:v2.3.0
     container_name: harbor-jobservice
@@ -138,7 +133,6 @@ services:
         target: /harbor_cust_cert
     networks:
       harbor:
-    dns_search: .
   redis:
     image: goharbor/redis-photon:v2.3.0
     container_name: redis
@@ -153,7 +147,6 @@ services:
       - {{harbor_data_volume }}/redis:/var/lib/redis
     networks:
       harbor:
-    dns_search: .
   proxy:
     image: goharbor/nginx-photon:v2.3.0
     container_name: nginx
@@ -172,7 +165,6 @@ services:
         target: /harbor_cust_cert
     networks:
       harbor:
-    dns_search: .
     ports:
       - {{ harbor_http_port }}:8080
     depends_on:
@@ -186,7 +178,6 @@ services:
     restart: always
     networks:
       harbor:
-    dns_search: .
     environment:
       SCANNER_REDIS_URL: redis://redis
     depends_on:
