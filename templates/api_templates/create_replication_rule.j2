@@ -1,0 +1,27 @@
+{
+  "name": "{{ item.name }}",
+  "description": "",
+  "src_registry": {{ replication_hub_info }},
+  "dest_registry": null,
+  "dest_namespace": "{{ item.destination_namespace }}",
+  "dest_namespace_replace_count": 1,
+  "trigger": {
+    "type": "{{ item.scheduled is defined | ternary('scheduled', 'manual') }}",
+    "trigger_settings": {
+      "cron": "{{ item.scheduled | default('') }}"
+    }
+  },
+  "enabled": true,
+  "deletion": false,
+  "override": {{ item.destination_override is defined | default(false) }},
+  "filters": [
+    {
+      "type": "name",
+      "value": "{{ item.source_mask }}"
+    },
+    {
+      "type": "tag",
+      "value": "{{ item.source_tag_mask }}"
+    }
+  ]
+}

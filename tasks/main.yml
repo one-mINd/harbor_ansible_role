@@ -10,3 +10,7 @@
 - name: Install aquasec trivy
   include: aquasec_trivy.yml
   tags: aquasec_trivy
+
+- name: Add Docker Hub replicaiton
+  include: replication_dockerhub.yml
+  tags: replication_dockerhub
