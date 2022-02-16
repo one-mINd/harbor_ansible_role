@@ -1,0 +1,11 @@
+{
+  "credential": {
+    "access_key": "{{ registry_access_key }}",
+    "access_secret": "{{ registry_access_secret }}",
+    "type": "{{ registry_auth_type }}"
+  },
+  "name": "{{ registry_name }}",
+  "url": "{{ registry_url }}",
+  "insecure": {{ registry_insecure | default(false) }},
+  "type": "{{ registry_type }}"
+}

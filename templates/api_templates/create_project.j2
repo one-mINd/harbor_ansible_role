@@ -2,5 +2,6 @@
   "project_name": "{{ item.project_name }}",
   "metadata": {
     "public": "{{ item.public }}",
+    {% if item.vulnerability_scanning is defined and item.vulnerability_scanning %}"auto_scan": "{{ item.vulnerability_scanning }}"{% endif %}
   }
 }

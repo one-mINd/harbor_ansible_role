@@ -20,12 +20,14 @@ harbor_remote_private_key_dir: "{{ harbor_config_dir }}/certificates/{{ harbor_h
 
 harbor_installer_args: ""
 harbor_force_install: false
+harbor_trivy_aquasec: false
 
 # harbor_projects: []
 #   - project_name: "firstproject"
 #     public: "true"
 #   - project_name: "secondproject"
 #     public: "false"
+#     vulnerability_scanning: "true" # set true to enable auto scan by default scanner
 # harbor_members: []
 #   - project: "firstproject"
 #     role_id: 1
@@ -44,3 +46,20 @@ harbor_force_install: false
 #     password: "HarborUser12345"
 #     realname: "user two"
 #     comment: "void"
+
+# harbor_replication_dockerhub_access_key: username
+# harbor_replication_dockerhub_access_secret: SecretAccessToken
+#
+# WARNING: On «Personal» account limit «200 pulls per 6 hours»
+# harbor_replication_dockerhub_rules:
+#   - name: ubuntu-20.04 # scheduled task to replicate
+#     source_mask: "library/ubuntu"
+#     source_tag_mask: "20.04*"
+#     destination_namespace: ""
+#     destination_override: true
+#     scheduled: "0 0 23 * * *"
+#   - name: nginx-alpine # manual task to replicate
+#     source_mask: "library/nginx"
+#     source_tag_mask: "*alpine*"
+#     destination_namespace: ""
+#     destination_override: true
