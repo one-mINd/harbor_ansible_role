@@ -2,21 +2,13 @@
 harbor_config_dir: /var/lib/harbor
 harbor_version: "v2.3.0"
 harbor_hostname: localhost            # you must change this variable before start playbook!!!!
-harbor_external_url: http://localhost # you must change this variable before start playbook!!!!
+harbor_external_url: "http://{{ harbor_hostname }}" # you must change this variable before start playbook!!!!
 harbor_admin_password: pass12345
 harbor_db_password: pass12345
 harbor_data_volume: /data/harbor
 harbor_logs_volume: /var/log/harbor
 
-harbor_trivy_github_token: empty
-
-harbor_connection_protocol: "http"
 harbor_http_port: 80
-harbor_https_port: 443
-# not used when connection_protocol = http
-# the path from which the certificate and key will be downloaded
-harbor_remote_certificate_dir: "{{ harbor_config_dir }}/certificates/{{ harbor_hostname }}.crt"
-harbor_remote_private_key_dir: "{{ harbor_config_dir }}/certificates/{{ harbor_hostname }}.key"
 
 harbor_installer_args: ""
 harbor_force_install: false

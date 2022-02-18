@@ -10,7 +10,7 @@
     registry_name: "Docker Hub"
     registry_type: "docker-hub"
   uri:
-    url: "{{ harbor_connection_protocol }}://{{ harbor_hostname }}/api/v2.0/registries"
+    url: "{{ harbor_external_url }}/api/v2.0/registries"
     validate_certs: no
     method: POST
     user: "admin"
@@ -32,7 +32,7 @@
 - name: Get Docker Hub registry info
   no_log: true
   uri:
-    url: "{{ harbor_connection_protocol }}://{{ harbor_hostname }}/api/v2.0/registries"
+    url: "{{ harbor_external_url }}/api/v2.0/registries"
     validate_certs: no
     method: GET
     user: "admin"
@@ -56,7 +56,7 @@
 - name: Create replication rules
   no_log: true
   uri:
-    url: "{{ harbor_connection_protocol }}://{{ harbor_hostname }}/api/v2.0/replication/policies"
+    url: "{{ harbor_external_url }}/api/v2.0/replication/policies"
     validate_certs: no
     method: POST
     user: "admin"
