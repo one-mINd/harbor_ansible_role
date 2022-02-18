@@ -21,9 +21,7 @@ Role Variables
 
 **harbor_config_dir** - place where harbor installation scripts and docker-compose.yml will be stored.
 
-**harbor_connection_protocol** - can be http or https. When value is http secure connection will not configure, and Harbor will be available only on http port.
-
-**harbor_http_port** and **harbor_https_port** - http/https ports
+**harbor_http_port** - http port
 
 **harbor_remote_certificate_dir** and **harbor_remote_private_key_dir** dirs where certificates for harbor stored.
 

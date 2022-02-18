@@ -5,7 +5,7 @@
     scanner_address: http://aquasec-trivy:8080
   no_log: true
   uri:
-    url: "{{ harbor_connection_protocol }}://{{ harbor_hostname }}/api/v2.0//scanners"
+    url: "{{ harbor_external_url }}/api/v2.0//scanners"
     validate_certs: no
     method: POST
     user: "admin"
