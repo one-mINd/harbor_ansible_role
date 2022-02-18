@@ -55,7 +55,7 @@
     rules: "{{ lookup('template', 'templates/api_templates/retention_rules.j2') }}"
     retention_id: "{{ harbor_projects_list.json | json_query(retention_id_query) | first }}"
     project_id: "{{ harbor_projects_list.json | json_query(project_id_query) | first }}"
-  with_items: "{{ harbor_projects_clean_rules }}"
+  with_items: "{{ harbor_projects_clean_rules | default([]) }}"
 
 - name: Create retentions policy
   no_log: true
@@ -80,4 +80,4 @@
     project_id_query: "[?name==`{{ item.name }}`].project_id"
     rules: "{{ lookup('template', 'templates/api_templates/retention_rules.j2') }}"
     project_id: "{{ harbor_projects_list.json | json_query(project_id_query) | first }}"
-  with_items: "{{ harbor_projects_clean_rules }}"
+  with_items: "{{ harbor_projects_clean_rules | default([]) }}"
