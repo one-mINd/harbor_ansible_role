@@ -1,0 +1,83 @@
+---
+- name: Set enum types
+  set_fact:
+    rule_types:
+      pushed_by_count: "latestPushedK"
+      pulled_by_count: "latestPulledN"
+      pushed_by_days:  "nDaysSinceLastPush"
+      pulled_by_days:  "nDaysSinceLastPull"
+    repositories_mask_types:
+      matching: "repoMatches"
+      excluding: "repoExcludes"
+    tags_mask_types:
+      matching: "matches"
+      excluding: "excludes"
+
+- name: Get projects list
+  no_log: true
+  uri:
+    url: "{{ harbor_external_url }}/api/v2.0/projects"
+    validate_certs: no
+    method: GET
+    user: "admin"
+    body_format: json
+    password: "{{ harbor_admin_password }}"
+    force_basic_auth: yes
+    return_content: yes
+    status_code: 200
+  register: harbor_projects_list
+  retries: 5
+  delay: 10
+  until: harbor_projects_list.status == 200
+  when: harbor_projects_clean_rules is defined
+
+- name: Update retentions policy
+  no_log: true
+  uri:
+    url: "{{ harbor_external_url }}/api/v2.0/retentions/{{ retention_id }}"
+    validate_certs: no
+    method: PUT
+    user: "admin"
+    body_format: json
+    body: "{{ lookup('template', 'templates/api_templates/create_update_retention.j2') }}"
+    password: "{{ harbor_admin_password }}"
+    force_basic_auth: yes
+    return_content: yes
+    status_code: 200
+  register: _result
+  retries: 5
+  delay: 10
+  until: _result.status == 200
+  when: harbor_projects_list.json | json_query(retention_id_query) | default(null)
+  vars:
+    retention_id_query: "[?name==`{{ item.name }}`].metadata.retention_id"
+    project_id_query: "[?name==`{{ item.name }}`].project_id"
+    rules: "{{ lookup('template', 'templates/api_templates/retention_rules.j2') }}"
+    retention_id: "{{ harbor_projects_list.json | json_query(retention_id_query) | first }}"
+    project_id: "{{ harbor_projects_list.json | json_query(project_id_query) | first }}"
+  with_items: "{{ harbor_projects_clean_rules }}"
+
+- name: Create retentions policy
+  no_log: true
+  uri:
+    url: "{{ harbor_external_url }}/api/v2.0/retentions"
+    validate_certs: no
+    method: POST
+    user: "admin"
+    body_format: json
+    body: "{{ lookup('template', 'templates/api_templates/create_update_retention.j2') }}"
+    password: "{{ harbor_admin_password }}"
+    force_basic_auth: yes
+    return_content: yes
+    status_code: 201
+  register: _result
+  retries: 5
+  delay: 10
+  until: _result.status == 201
+  when: not harbor_projects_list.json | json_query(retention_id_query) | default(null)
+  vars:
+    retention_id_query: "[?name==`{{ item.name }}`].metadata.retention_id"
+    project_id_query: "[?name==`{{ item.name }}`].project_id"
+    rules: "{{ lookup('template', 'templates/api_templates/retention_rules.j2') }}"
+    project_id: "{{ harbor_projects_list.json | json_query(project_id_query) | first }}"
+  with_items: "{{ harbor_projects_clean_rules }}"

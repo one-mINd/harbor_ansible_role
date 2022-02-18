@@ -55,3 +55,34 @@ harbor_trivy_aquasec: false
 #     source_tag_mask: "*alpine*"
 #     destination_namespace: ""
 #     destination_override: true
+
+
+# projects must exists to create rules
+#harbor_projects_clean_rules:
+#  - name: firstproject
+#    # cron exec rules
+#    scheduled: "0 0 23 * * *"
+#    rules:
+#      - repositories_mask_type: "matching"
+#        repositories_mask: "**"
+#        tags_mask_type: "matching"
+#        tags_mask: "**"
+#        rule_type: "pushed_by_count"
+#        rule_value: 100
+#
+#      - repositories_mask_type: "matching"
+#        repositories_mask: "**"
+#        tags_mask_type: "matching"
+#        tags_mask: "**"
+#        rule_type: "pulled_by_count"
+#        rule_value: 100
+#
+#  - name: secondproject
+#    # manual exec rules
+#    rules:
+#      - repositories_mask_type: "matching"
+#        repositories_mask: "**"
+#        tags_mask_type: "matching"
+#        tags_mask: "**"
+#        rule_type: "pushed_by_days"
+#        rule_value: 365
