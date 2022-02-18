@@ -1,0 +1,15 @@
+{
+  "algorithm": "or",
+  {% if retention_id is defined %}"id": {{ retention_id }},{% endif %}
+  "rules": {{ rules }},
+  "scope": {
+    "level": "project",
+    "ref": {{ project_id }}
+  },
+  "trigger": {
+    "kind": "Schedule",
+    "settings": {
+      "cron": "{{ item.scheduled | default('') }}"
+    }
+  }
+}

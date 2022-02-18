@@ -1,16 +1,20 @@
 ---
 - name: Install Harbor
-  include: install.yml
+  include_tasks: install.yml
   tags: install
 
 - name: Manage users
-  include: users_management.yml
+  include_tasks: users_management.yml
   tags: users
 
 - name: Install aquasec trivy
-  include: aquasec_trivy.yml
+  include_tasks: aquasec_trivy.yml
   tags: aquasec_trivy
 
 - name: Add Docker Hub replicaiton
-  include: replication_dockerhub.yml
+  include_tasks: replication_dockerhub.yml
   tags: replication_dockerhub
+
+- name: Manage projects retention policy
+  include_tasks: project_retention_policy_management.yml
+  tags: retention_policy

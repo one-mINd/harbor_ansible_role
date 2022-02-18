@@ -1,0 +1,29 @@
+[
+{% for rule in item.rules %}
+{
+  "action": "retain",
+  {% if loop.index0 | bool or loop.last %}"disabled": false,{% endif %}
+  "scope_selectors": {
+    "repository": [
+      {
+        "kind": "doublestar",
+        "decoration": "{{ repositories_mask_types[rule.repositories_mask_type] }}",
+        "pattern": "{{ rule.repositories_mask }}"
+      }
+    ]
+  },
+  "tag_selectors": [
+    {
+      "decoration": "{{ tags_mask_types[rule.tags_mask_type] }}",
+      "extras": "{\"untagged\":true}",
+      "kind": "doublestar",
+      "pattern": "{{ rule.tags_mask }}"
+    }
+  ],
+  "params": {
+    "{{ rule_types[rule.rule_type] }}": "{{ rule.rule_value }}"
+  },
+  "template": "{{ rule_types[rule.rule_type] }}"
+},
+{% endfor %}
+]
