@@ -21,7 +21,7 @@
     }
   ],
   "params": {
-    "{{ rule_types[rule.rule_type] }}": "{{ rule.rule_value }}"
+    "{{ rule_types[rule.rule_type] }}": {{ rule.rule_value }}
   },
   "template": "{{ rule_types[rule.rule_type] }}"
 },
