@@ -64,52 +64,52 @@ Example Playbook
 - hosts: servers
   roles:
       - one_mind.harbor_ansible_role
-    vars:
-    
-      # create
-      harbor_projects:
-        - project_name: "firstproject"
-          public: "true"
-        - project_name: "secondproject"
-          public: "false"
-      harbor_members: 
-        - project: "firstproject"
-          role_id: 1
-          username: "user_one"
-        - project: "secondproject"
-          role_id: 2
-          username: "second_one"
-      harbor_users:
-        - username: "user_one"
-          email: "email@mail.com"
-          password: "harboruser12345"
-          realname: "user one"
-          comment: "void"
-        - username: "second_one"
-          email: "email_two@mail.com"
-          password: "harboruser12345"
-          realname: "user two"
-          comment: "void"
-          
-        # get
-        harbor_get_users: yes
-        harbor_get_projects: yes
-        harbor_get_members:
-          - project_id: firstproject
-          - project_id: secondproject
+  vars:
+  
+    # create
+    harbor_projects:
+      - project_name: "firstproject"
+        public: "true"
+      - project_name: "secondproject"
+        public: "false"
+    harbor_members: 
+      - project: "firstproject"
+        role_id: 1
+        username: "user_one"
+      - project: "secondproject"
+        role_id: 2
+        username: "second_one"
+    harbor_users:
+      - username: "user_one"
+        email: "email@mail.com"
+        password: "harboruser12345"
+        realname: "user one"
+        comment: "void"
+      - username: "second_one"
+        email: "email_two@mail.com"
+        password: "harboruser12345"
+        realname: "user two"
+        comment: "void"
         
-        # remove
-        harbor_remove_users:
-          - user_id: 1
-          - user_id: 2
-        harbor_remove_members:
-          - project_id: 1
-            member_id: 1
-          - project_id: 2
-            member_id: 2
-        harbor_remove_projects:
-          - project_id: 1
-          - project_id: 2
+    # get
+    harbor_get_users: yes
+    harbor_get_projects: yes
+    harbor_get_members:
+      - project_id: firstproject
+      - project_id: secondproject
+    
+    # remove
+    harbor_remove_users:
+      - user_id: 1
+      - user_id: 2
+    harbor_remove_members:
+      - project_id: 1
+        member_id: 1
+      - project_id: 2
+        member_id: 2
+    harbor_remove_projects:
+      - project_id: 1
+      - project_id: 2
 ```
 
 More info
