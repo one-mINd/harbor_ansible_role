@@ -1,11 +1,11 @@
 {
   "credential": {
-    "access_key": "{{ registry_access_key }}",
-    "access_secret": "{{ registry_access_secret }}",
-    "type": "{{ registry_auth_type }}"
+    "access_key": "{{ item.registry_access_key }}",
+    "access_secret": "{{ item.registry_access_secret }}",
+    "type": "{{ item.registry_auth_type }}"
   },
-  "name": "{{ registry_name }}",
-  "url": "{{ registry_url }}",
-  "insecure": {{ registry_insecure | default(false) }},
-  "type": "{{ registry_type }}"
+  "name": "{{ item.registry_name }}",
+  "url": "{{ item.registry_url }}",
+  "insecure": {{ item.registry_insecure | default(false) }},
+  "type": "{{ item.registry_type }}"
 }

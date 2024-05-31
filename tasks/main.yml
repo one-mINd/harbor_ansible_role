@@ -12,8 +12,8 @@
   tags: aquasec_trivy
 
 - name: Add Docker Hub replicaiton
-  include_tasks: replication_dockerhub.yml
-  tags: replication_dockerhub
+  include_tasks: replication.yml
+  tags: replication
 
 - name: Manage projects retention policy
   include_tasks: project_retention_policy_management.yml

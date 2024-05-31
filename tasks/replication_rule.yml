@@ -1,0 +1,68 @@
+---
+- name: Set replication hub info
+  set_fact:
+    replication_hub_info: "{{ check_registry_result.json | json_query(query) | first }}"
+  vars:
+    query: "[?name==`{{ item.source_registry }}`]"
+  when: check_registry_result.json is defined
+
+- name: Create replication rule
+  no_log: true
+  uri:
+    url: "{{ harbor_external_url }}/api/v2.0/replication/policies"
+    validate_certs: no
+    method: POST
+    user: "admin"
+    password: "{{ harbor_admin_password }}"
+    body_format: json
+    force_basic_auth: yes
+    return_content: yes
+    status_code:
+      - 201
+      - 409
+    body: "{{ lookup('template', 'templates/api_templates/create_replication_rule.j2') }}"
+  register: _result
+  retries: 1
+  delay: 1
+  until: (_result.status == 201) or (_result.status == 409)
+  when: harbor_replication_dockerhub_rules is defined and replication_hub_info is defined
+
+- name: Get existed rule
+  no_log: true
+  uri:
+    url: "{{ harbor_external_url }}/api/v2.0/replication/policies?q=name%3D{{ item.name }}"
+    validate_certs: no
+    method: GET
+    user: "admin"
+    password: "{{ harbor_admin_password }}"
+    body_format: json
+    force_basic_auth: yes
+    return_content: yes
+    status_code:
+      - 200
+    body: "{{ lookup('template', 'templates/api_templates/create_replication_rule.j2') }}"
+  register: existed_rule
+  retries: 1
+  delay: 1
+  until: existed_rule.status == 200
+  when: harbor_replication_dockerhub_rules is defined and replication_hub_info is defined and _result.status == 409
+
+- name: Update replication rule
+  no_log: true
+  uri:
+    url: "{{ harbor_external_url }}/api/v2.0/replication/policies/{{ existed_rule.json[0].id }}"
+    validate_certs: no
+    method: PUT
+    user: "admin"
+    password: "{{ harbor_admin_password }}"
+    body_format: json
+    force_basic_auth: yes
+    return_content: yes
+    status_code:
+      - 200
+    body: "{{ lookup('template', 'templates/api_templates/create_replication_rule.j2') }}"
+  register: _result
+  retries: 1
+  delay: 1
+  until: _result.status == 200
+  when: harbor_replication_dockerhub_rules is defined and replication_hub_info is defined and _result.status == 409
