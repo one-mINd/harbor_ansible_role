@@ -4,7 +4,7 @@
     replication_hub_info: "{{ check_registry_result.json | json_query(query) | first }}"
   vars:
     query: "[?name==`{{ item.source_registry }}`]"
-  when: check_registry_result.json is defined
+  when: check_registry_result.json is defined and check_registry_result.json != []
 
 - name: Create replication rule
   no_log: true
