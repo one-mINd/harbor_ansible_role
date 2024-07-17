@@ -69,12 +69,14 @@
     password: "{{ harbor_admin_password }}"
     force_basic_auth: yes
     return_content: yes
-    status_code: 201
+    status_code:
+     - 201
+     - 400
   register: _result
   retries: 5
   delay: 10
-  until: _result.status == 201
-  when: not harbor_projects_list.json | json_query(retention_id_query) | default(null)
+  until: _result.status == 201 or _result.status == 400
+  when: harbor_projects_list.json | json_query(retention_id_query) | length > 0
   vars:
     retention_id_query: "[?name==`{{ item.name }}`].metadata.retention_id"
     project_id_query: "[?name==`{{ item.name }}`].project_id"
