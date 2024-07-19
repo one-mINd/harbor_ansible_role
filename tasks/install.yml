@@ -16,8 +16,8 @@
   become: yes
   become_user: root
   get_url:
-    url: "https://github.com/goharbor/harbor/releases/download/{{ harbor_version }}-rc3/harbor-offline-installer-{{ harbor_version }}-rc3.tgz"
-    dest: "{{ harbor_config_dir }}/harbor.tgz"
+    url: "https://github.com/goharbor/harbor/releases/download/{{ harbor_version }}/harbor-offline-installer-{{ harbor_version }}.tgz"
+    dest: "{{ harbor_config_dir }}/harbor-offline-installer-{{ harbor_version }}.tgz"
     mode: 0755
     owner: root
     group: root
@@ -27,50 +27,69 @@
   become_user: root
   unarchive:
     remote_src: yes
-    src: "{{ harbor_config_dir }}/harbor.tgz"
+    src: "{{ harbor_config_dir }}/harbor-offline-installer-{{ harbor_version }}.tgz"
     dest: "{{ harbor_config_dir }}/source"
     creates: "{{ harbor_config_dir }}/source/harbor"
 
-- name: Set harbor.yml
-  become: yes
-  become_user: root
-  template:
-    src: harbor.yml.j2
-    dest: "{{ harbor_config_dir }}/source/harbor/harbor.yml"
-    owner: root
-    group: root
-    mode: 0644
+- name: Read harbor.yml.tmpl
+  ansible.builtin.slurp:
+    src: "{{ harbor_config_dir }}/source/harbor/harbor.yml.tmpl"
+  register: slurped_yaml
 
-- name: Set install script
-  become: yes
-  become_user: root
-  template:
-    src: install.sh.j2
-    dest: "{{ harbor_config_dir }}/source/harbor/install.sh"
-    owner: root
-    group: root
-    mode: 0755
+- name: Modify harbor.yml. Disable https
+  ansible.builtin.set_fact:
+    harbor_yaml: >-
+      {{ slurped_yaml.content|b64decode|from_yaml|ansible.utils.remove_keys(target=['^https$'],
+      matching_parameter= 'regex') }}
+
+- name: Modify harbor.yml. Configure starting parameters
+  ansible.builtin.set_fact:
+    harbor_yaml: "{{ harbor_yaml | ansible.builtin.combine(newdata, recursive=true) }}"
+  vars: 
+    newdata:
+      hostname: "{{ harbor_hostname }}"
+      http:
+        port: "{{ harbor_http_port }}"
+      harbor_admin_password: "{{ harbor_admin_password }}"
+      database: 
+        password: "{{ harbor_db_password }}"
+      data_volume: "{{ harbor_data_volume }}"
+      trivy:
+        timeout: 5m0s
+
+- name: Write harbor.yml
+  ansible.builtin.copy:
+    content: '{{ harbor_yaml | to_nice_yaml }}'
+    dest: "{{ harbor_config_dir }}/source/harbor/harbor.yml"
+
+- name: Load all image(s) from the given tar file
+  community.docker.docker_image_load:
+    path: "{{ harbor_config_dir }}/source/harbor/harbor.{{ harbor_version }}.tar.gz"
+  register: result
+
+- name: Print the loaded image names
+  ansible.builtin.debug:
+    msg: "Loaded the following images: {{ result.image_names | join(', ') }}"
 
 - name: Check that the Harbor already installed
   stat:
     path: "{{ harbor_data_volume }}/registry"
   register: installed_result
 
-- name: Install Harbor
+- name: Prepare Harbor
   become: yes
   become_user: root
-  shell: "{{ harbor_config_dir }}/source/harbor/install.sh {{ harbor_installer_args }}"
+  shell:
+    cmd: "./prepare {{ harbor_installer_args }}"
+    chdir: "{{ harbor_config_dir }}/source/harbor/"
   when: (harbor_force_install is defined and harbor_force_install | bool) or not installed_result.stat.exists
 
-- name: Set docker config
-  become: yes
-  become_user: root
-  template:
-    src: docker-compose.yml.j2
-    dest: "{{ harbor_config_dir }}/source/harbor/docker-compose.yml"
-    owner: root
-    group: root
-    mode: 0644
+- name: Change correct permissions after prepare
+  ansible.builtin.file:
+    path: "{{ harbor_config_dir }}/source/harbor/common"
+    state: directory
+    recurse: yes
+    mode: '0755'
 
 - name: Start Harbor
   community.docker.docker_compose:
