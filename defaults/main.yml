@@ -1,7 +1,7 @@
 ---
 harbor_config_dir: /var/lib/harbor
-harbor_version: "v2.3.0"
-harbor_hostname: localhost            # you must change this variable before start playbook!!!!
+harbor_version: "v2.10.3"
+harbor_hostname: harbor.example.com            # you must change this variable before start playbook!!!!
 harbor_external_url: "http://{{ harbor_hostname }}" # you must change this variable before start playbook!!!!
 harbor_admin_password: pass12345
 harbor_db_password: pass12345
@@ -10,9 +10,8 @@ harbor_logs_volume: /var/log/harbor
 
 harbor_http_port: 80
 
-harbor_installer_args: ""
+harbor_installer_args: "--with-trivy"
 harbor_force_install: false
-harbor_trivy_aquasec: false
 
 # harbor_projects: []
 #   - project_name: "firstproject"
