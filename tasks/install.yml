@@ -92,6 +92,6 @@
     mode: '0755'
 
 - name: Start Harbor
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ harbor_config_dir }}/source/harbor"
   register: output
