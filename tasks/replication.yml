@@ -19,6 +19,7 @@
   delay: 10
   until: (create_registry_result.status == 201) or (create_registry_result.status == 409)
   with_items: "{{ harbor_replication_registries }}"
+  when: harbor_replication_registries is defined
 
 - name: Get Docker Hub registry info
   no_log: true
@@ -42,3 +43,4 @@
 - name: Create replication rules
   include_tasks: replication_rule.yml
   loop: "{{ harbor_replication_dockerhub_rules }}"
+  when: harbor_replication_dockerhub_rules is defined

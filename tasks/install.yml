@@ -1,97 +1,112 @@
 ---
-- name: Ensure install dir
+- name: Install required packages
+  ansible.builtin.apt:
+    name: apache2-utils
+    state: present
+    update_cache: yes
+
+- name: Ensure dirs
+  become: yes
+  become_user: root
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0766
+    owner: 10000
+    group: 10000
+  with_items:
+    - "{{ harbor_config_dir }}"
+    - "{{ harbor_config_dir }}/source"
+    - "{{ harbor_config_dir }}/core"
+    - "{{ harbor_config_dir }}/registry"
+    - "{{ harbor_config_dir }}/config"
+    - "{{ harbor_config_dir }}/config/shared"
+    - "{{ harbor_config_dir }}/config/shared/trust-certificates"
+    - "{{ harbor_config_dir }}/config/certificates/"
+    - "{{ harbor_config_dir }}/config/registry"
+    - "{{ harbor_config_dir }}/config/nginx"
+    - "{{ harbor_data_volume }}/trivy-adapter/trivy"
+    - "{{ harbor_data_volume }}/trivy-adapter/reports"
+    - "{{ harbor_data_volume }}/job_logs"
+    - "{{ harbor_data_volume }}/database"
+    - "{{ harbor_data_volume }}/redis"
+    - "{{ harbor_data_volume }}/ca_download"
+    - "{{ harbor_data_volume }}/registry"
+    - /var/log/harbor
+
+- name: Set correct permissions
   become: yes
   become_user: root
   file:
     path: "{{ item }}"
     state: directory
     mode: 0755
-    owner: root
-    group: root
+    owner: 999
+    group: 999
   with_items:
-    - "{{ harbor_config_dir }}"
-    - "{{ harbor_config_dir }}/source"
+    - "{{ harbor_data_volume }}/database"
+    - "{{ harbor_data_volume }}/redis"
 
-- name: Download Harbor
+- name: Ensure configuration files
+  ansible.builtin.template:
+    src: "confs/{{ item }}"
+    dest: "{{ harbor_config_dir }}/config/{{ item | replace('.j2', '') }}"
+    mode: 0766
+    owner: 10000
+    group: 10000
+  with_items:
+  - core-app.conf.j2  
+  - jobservice-config.yml.j2
+  - logrotate.conf.j2
+  - portal-nginx.conf.j2
+  - proxy-nginx.conf.j2
+  - registryctl-config.yml.j2
+  - rsyslog_docker.conf.j2
+
+- name: Create harbor core key
+  community.crypto.openssl_privatekey:
+    path: "{{ harbor_config_dir }}/core/private_key.pem"
+
+- name: Set correct permissions for core key
   become: yes
   become_user: root
-  get_url:
-    url: "https://github.com/goharbor/harbor/releases/download/{{ harbor_version }}/harbor-offline-installer-{{ harbor_version }}.tgz"
-    dest: "{{ harbor_config_dir }}/harbor-offline-installer-{{ harbor_version }}.tgz"
+  file:
+    path: "{{ item }}"
+    mode: 0400
+    owner: 10000
+    group: 10000
+  with_items:
+    - "{{ harbor_config_dir }}/core/private_key.pem"
+
+- name: Ensure registry configuration file
+  ansible.builtin.template:
+    src: "confs/registry.yml.j2"
+    dest: "{{ harbor_config_dir }}/config/registry/config.yml"
+    mode: 0755
+    owner: 10000
+    group: 10000
+
+- name: Add registry user to passwd
+  shell: "/usr/bin/htpasswd -bcB {{ harbor_config_dir }}/config/registry/passwd harbor_registry_user {{ harbor_admin_password }}"
+
+- name: Set correct permissions for core key
+  become: yes
+  become_user: root
+  file:
+    path: "{{ harbor_config_dir }}/config/registry/passwd"
+    mode: 0755
+    owner: 10000
+    group: 10000
+
+- name: Ensure docker compose file
+  ansible.builtin.template:
+    src: "docker-compose.yml.j2"
+    dest: "{{ harbor_config_dir }}/docker-compose.yml"
     mode: 0755
     owner: root
     group: root
 
-- name: Unzip Harbor
-  become: yes
-  become_user: root
-  unarchive:
-    remote_src: yes
-    src: "{{ harbor_config_dir }}/harbor-offline-installer-{{ harbor_version }}.tgz"
-    dest: "{{ harbor_config_dir }}/source"
-    creates: "{{ harbor_config_dir }}/source/harbor"
-
-- name: Read harbor.yml.tmpl
-  ansible.builtin.slurp:
-    src: "{{ harbor_config_dir }}/source/harbor/harbor.yml.tmpl"
-  register: slurped_yaml
-
-- name: Modify harbor.yml. Disable https
-  ansible.builtin.set_fact:
-    harbor_yaml: >-
-      {{ slurped_yaml.content|b64decode|from_yaml|ansible.utils.remove_keys(target=['^https$'],
-      matching_parameter= 'regex') }}
-
-- name: Modify harbor.yml. Configure starting parameters
-  ansible.builtin.set_fact:
-    harbor_yaml: "{{ harbor_yaml | ansible.builtin.combine(newdata, recursive=true) }}"
-  vars: 
-    newdata:
-      hostname: "{{ harbor_hostname }}"
-      http:
-        port: "{{ harbor_http_port }}"
-      harbor_admin_password: "{{ harbor_admin_password }}"
-      database: 
-        password: "{{ harbor_db_password }}"
-      data_volume: "{{ harbor_data_volume }}"
-      trivy:
-        timeout: 5m0s
-
-- name: Write harbor.yml
-  ansible.builtin.copy:
-    content: '{{ harbor_yaml | to_nice_yaml }}'
-    dest: "{{ harbor_config_dir }}/source/harbor/harbor.yml"
-
-- name: Load all image(s) from the given tar file
-  community.docker.docker_image_load:
-    path: "{{ harbor_config_dir }}/source/harbor/harbor.{{ harbor_version }}.tar.gz"
-  register: result
-
-- name: Print the loaded image names
-  ansible.builtin.debug:
-    msg: "Loaded the following images: {{ result.image_names | join(', ') }}"
-
-- name: Check that the Harbor already installed
-  stat:
-    path: "{{ harbor_data_volume }}/registry"
-  register: installed_result
-
-- name: Prepare Harbor
-  become: yes
-  become_user: root
-  shell:
-    cmd: "./prepare {{ harbor_installer_args }}"
-    chdir: "{{ harbor_config_dir }}/source/harbor/"
-  when: (harbor_force_install is defined and harbor_force_install | bool) or not installed_result.stat.exists
-
-- name: Change correct permissions after prepare
-  ansible.builtin.file:
-    path: "{{ harbor_config_dir }}/source/harbor/common"
-    state: directory
-    recurse: yes
-    mode: '0755'
-
 - name: Start Harbor
   community.docker.docker_compose_v2:
-    project_src: "{{ harbor_config_dir }}/source/harbor"
+    project_src: "{{ harbor_config_dir }}"
   register: output

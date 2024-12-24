@@ -1,0 +1,343 @@
+version: '2.3'
+services:
+  log:
+    image: goharbor/harbor-log:{{ harbor_version }}
+    container_name: harbor-log
+    restart: always
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - SETGID
+      - SETUID
+    volumes:
+      - /var/log/harbor/:/var/log/docker/:z
+      - type: bind
+        source: {{ harbor_config_dir }}/config/logrotate.conf
+        target: /etc/logrotate.d/logrotate.conf
+      - type: bind
+        source: {{ harbor_config_dir }}/config/rsyslog_docker.conf
+        target: /etc/rsyslog.d/rsyslog_docker.conf
+    ports:
+      - 127.0.0.1:1514:10514
+    networks:
+      - harbor
+
+  registry:
+    image: goharbor/registry-photon:{{ harbor_version }}
+    container_name: harbor-registry
+    restart: always
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    ports:
+      - 5000:5000
+    volumes:
+      - {{ harbor_data_volume }}/registry:/storage:z
+      - {{ harbor_config_dir }}/config/registry/:/etc/registry/:z
+      - type: bind
+        source: {{ harbor_config_dir }}/config/shared/trust-certificates
+        target: /harbor_cust_cert
+    networks:
+      - harbor
+    depends_on:
+      - log
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "tcp://localhost:1514"
+        tag: "registry"
+    environment:
+        CORE_SECRET: {{ harbor_core_secret }}
+        JOBSERVICE_SECRET: {{ harbor_jobservice_secret }}
+
+  registryctl:
+    image: goharbor/harbor-registryctl:{{ harbor_version }}
+    container_name: harbor-registryctl
+    restart: always
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    volumes:
+      - {{ harbor_data_volume }}/registry:/storage:z
+      - {{ harbor_config_dir }}/config/registry/:/etc/registry/:z
+      - type: bind
+        source: {{ harbor_config_dir }}/config/registryctl-config.yml
+        target: /etc/registryctl/config.yml
+      - type: bind
+        source: {{ harbor_config_dir }}/config/shared/trust-certificates
+        target: /harbor_cust_cert
+    networks:
+      - harbor
+    depends_on:
+      - log
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "tcp://localhost:1514"
+        tag: "registryctl"
+    environment:
+        CORE_SECRET: {{ harbor_core_secret }}
+        JOBSERVICE_SECRET: {{ harbor_jobservice_secret }}
+
+  postgresql:
+    image: goharbor/harbor-db:{{ harbor_version }}
+    container_name: harbor-db
+    restart: always
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - SETGID
+      - SETUID
+    volumes:
+      - {{ harbor_data_volume }}/database:/var/lib/postgresql/data:z
+    networks:
+      harbor:
+    depends_on:
+      - log
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "tcp://localhost:1514"
+        tag: "postgresql"
+    shm_size: '1gb'
+
+  core:
+    image: goharbor/harbor-core:{{ harbor_version }}
+    container_name: harbor-core
+    restart: always
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETGID
+      - SETUID
+    volumes:
+      - {{ harbor_data_volume }}/ca_download/:/etc/core/ca/:z
+      - {{ harbor_data_volume }}/:/data/:z
+      - {{ harbor_config_dir }}/config/certificates/:/etc/core/certificates/:z
+      - type: bind
+        source: {{ harbor_config_dir }}/core/private_key.pem
+        target: /etc/core/private_key.pem
+      - type: bind
+        source: {{ harbor_config_dir }}/config/core-app.conf
+        target: /etc/core/app.conf
+    networks:
+      harbor:
+    depends_on:
+      - log
+      - registry
+      - redis
+      - postgresql
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "tcp://localhost:1514"
+        tag: "core"
+    environment:
+        CONFIG_PATH: /etc/core/app.conf
+        UAA_CA_ROOT: /etc/core/certificates/uaa_ca.pem
+        _REDIS_URL_CORE: redis://redis:6379?idle_timeout_seconds=30
+        SYNC_QUOTA: true
+        CHART_CACHE_DRIVER: redis
+        _REDIS_URL_REG: redis://redis:6379/1?idle_timeout_seconds=30
+        LOG_LEVEL: info
+        EXT_ENDPOINT: {{ harbor_external_url }}
+        DATABASE_TYPE: postgresql
+        POSTGRESQL_HOST: harbor-db
+        POSTGRESQL_PORT: 5432
+        POSTGRESQL_USERNAME: postgres
+        POSTGRESQL_PASSWORD: {{ harbor_postgres_password }}
+        POSTGRESQL_DATABASE: registry
+        POSTGRESQL_SSLMODE: disable
+        POSTGRESQL_MAX_IDLE_CONNS: 100
+        POSTGRESQL_MAX_OPEN_CONNS: 900
+        REGISTRY_URL: http://registry:5000
+        PORTAL_URL: http://portal:8080
+        TOKEN_SERVICE_URL: http://core:8080/service/token
+        HARBOR_ADMIN_PASSWORD: {{ harbor_admin_password }}
+        MAX_JOB_WORKERS: 10
+        CORE_SECRET: {{ harbor_core_secret }}
+        JOBSERVICE_SECRET: {{ harbor_jobservice_secret }}
+        WITH_NOTARY: False
+        WITH_TRIVY: False
+        CORE_URL: http://core:8080
+        CORE_LOCAL_URL: http://127.0.0.1:8080
+        JOBSERVICE_URL: http://jobservice:8080
+        TRIVY_ADAPTER_URL: http://trivy-adapter:8080
+        NOTARY_URL: http://notary-server:4443
+        REGISTRY_STORAGE_PROVIDER_NAME: filesystem
+        READ_ONLY: false
+        RELOAD_KEY: ""
+        CHART_REPOSITORY_URL: http://chartmuseum:9999
+        REGISTRY_CONTROLLER_URL: http://registryctl:8080
+        WITH_CHARTMUSEUM: False
+        REGISTRY_CREDENTIAL_USERNAME: harbor_registry_user
+        REGISTRY_CREDENTIAL_PASSWORD: {{ harbor_admin_password }}
+        CSRF_KEY: {{ harbor_csrf_key }}
+        PERMITTED_REGISTRY_TYPES_FOR_PROXY_CACHE: docker-hub,harbor,azure-acr,aws-ecr,google-gcr,quay,docker-registry
+        HTTP_PROXY: ""
+        HTTPS_PROXY: ""
+        NO_PROXY: portal,registry,nginx,notary-signer,127.0.0.1,localhost,registryctl,exporter,core,jobservice,.local,db,trivy-adapter,.internal,notary-server,postgresql,log,chartmuseum,redis
+        PORT: 8080
+
+  portal:
+    image: goharbor/harbor-portal:{{ harbor_version }}
+    container_name: harbor-portal
+    restart: always
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+      - NET_BIND_SERVICE
+    volumes:
+      - type: bind
+        source: {{ harbor_config_dir }}/config/portal-nginx.conf
+        target: /etc/nginx/nginx.conf
+    networks:
+      - harbor
+    depends_on:
+      - log
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "tcp://localhost:1514"
+        tag: "portal"
+
+  jobservice:
+    image: goharbor/harbor-jobservice:{{ harbor_version }}
+    container_name: harbor-jobservice
+    restart: always
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    volumes:
+      - {{ harbor_data_volume }}/job_logs:/var/log/jobs:z
+      - type: bind
+        source: {{ harbor_config_dir }}/config/jobservice-config.yml
+        target: /etc/jobservice/config.yml
+      - type: bind
+        source: {{ harbor_config_dir }}/config/shared/trust-certificates
+        target: /harbor_cust_cert
+    networks:
+      - harbor
+    depends_on:
+      - core
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "tcp://localhost:1514"
+        tag: "jobservice"
+    environment:
+        CORE_SECRET: {{ harbor_core_secret }}
+        REGISTRY_URL: http://registry:5000
+        JOBSERVICE_SECRET: {{ harbor_jobservice_secret }}
+        CORE_URL: http://core:8080
+        REGISTRY_CONTROLLER_URL: http://registryctl:8080
+        JOBSERVICE_WEBHOOK_JOB_MAX_RETRY: 10
+        HTTP_PROXY: ""
+        HTTPS_PROXY: ""
+        NO_PROXY: portal,registry,nginx,notary-signer,127.0.0.1,localhost,registryctl,exporter,core,jobservice,.local,db,trivy-adapter,.internal,notary-server,postgresql,log,chartmuseum,redis
+        REGISTRY_CREDENTIAL_USERNAME: harbor_registry_user
+        REGISTRY_CREDENTIAL_PASSWORD: {{ harbor_admin_password }}
+
+  redis:
+    image: goharbor/redis-photon:{{ harbor_version }}
+    container_name: harbor-redis
+    restart: always
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    volumes:
+      - {{ harbor_data_volume }}/redis:/var/lib/redis
+    networks:
+      harbor:
+    depends_on:
+      - log
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "tcp://localhost:1514"
+        tag: "redis"
+
+  proxy:
+    image: goharbor/nginx-photon:{{ harbor_version }}
+    container_name: harbor-nginx
+    restart: always
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+      - NET_BIND_SERVICE
+    volumes:
+      - {{ harbor_config_dir }}/config/nginx:/etc/nginx:z
+      - type: bind
+        source: {{ harbor_config_dir }}/config/proxy-nginx.conf
+        target: /etc/nginx/nginx.conf
+      - type: bind
+        source: {{ harbor_config_dir }}/config/shared/trust-certificates
+        target: /harbor_cust_cert
+    networks:
+      - harbor
+    ports:
+      - 8888:8080
+    depends_on:
+      - registry
+      - core
+      - portal
+      - log
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "tcp://localhost:1514"
+        tag: "proxy"
+
+  aquasec-trivy:
+    container_name: harbor-trivy-adapter
+    image: goharbor/trivy-adapter-photon:{{ harbor_version }}
+    restart: always
+    cap_drop:
+      - ALL
+    depends_on:
+      - log
+      - redis
+    networks:
+      - harbor
+    volumes:
+      - type: bind
+        source: {{ harbor_data_volume }}/trivy-adapter/trivy
+        target: /home/scanner/.cache/trivy
+      - type: bind
+        source: {{ harbor_data_volume }}/trivy-adapter/reports
+        target: /home/scanner/.cache/reports
+      - type: bind
+        source: {{ harbor_config_dir }}/config/shared/trust-certificates
+        target: /harbor_cust_cert
+
+    logging:
+      driver: "syslog"
+      options:
+        syslog-address: "tcp://localhost:1514"
+        tag: "trivy-adapter"
+
+networks:
+  harbor:
+    external: false
