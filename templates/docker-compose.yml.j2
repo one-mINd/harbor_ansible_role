@@ -1,4 +1,3 @@
-version: '2.3'
 services:
   log:
     image: goharbor/harbor-log:{{ harbor_version }}
@@ -47,9 +46,9 @@ services:
     depends_on:
       - log
     logging:
-      driver: "syslog"
+      driver: {{ docker_log_driver | default('syslog')}}
       options:
-        syslog-address: "tcp://localhost:1514"
+        {{ docker_log_driver | default('syslog')}}-address: {{ logging_address }}
         tag: "registry"
     environment:
         CORE_SECRET: {{ harbor_core_secret }}
@@ -79,9 +78,9 @@ services:
     depends_on:
       - log
     logging:
-      driver: "syslog"
+      driver: {{ docker_log_driver | default('syslog')}}
       options:
-        syslog-address: "tcp://localhost:1514"
+        {{ docker_log_driver | default('syslog')}}-address: {{ logging_address }}
         tag: "registryctl"
     environment:
         CORE_SECRET: {{ harbor_core_secret }}
@@ -105,9 +104,9 @@ services:
     depends_on:
       - log
     logging:
-      driver: "syslog"
+      driver: {{ docker_log_driver | default('syslog')}}
       options:
-        syslog-address: "tcp://localhost:1514"
+        {{ docker_log_driver | default('syslog')}}-address: {{ logging_address }}
         tag: "postgresql"
     shm_size: '1gb'
 
@@ -138,9 +137,9 @@ services:
       - redis
       - postgresql
     logging:
-      driver: "syslog"
+      driver: {{ docker_log_driver | default('syslog')}}
       options:
-        syslog-address: "tcp://localhost:1514"
+        {{ docker_log_driver | default('syslog')}}-address: {{ logging_address }}
         tag: "core"
     environment:
         CONFIG_PATH: /etc/core/app.conf
@@ -155,7 +154,7 @@ services:
         POSTGRESQL_HOST: harbor-db
         POSTGRESQL_PORT: 5432
         POSTGRESQL_USERNAME: postgres
-        POSTGRESQL_PASSWORD: {{ harbor_postgres_password }}
+        POSTGRESQL_PASSWORD: {{ harbor_db_password }}
         POSTGRESQL_DATABASE: registry
         POSTGRESQL_SSLMODE: disable
         POSTGRESQL_MAX_IDLE_CONNS: 100
@@ -180,7 +179,7 @@ services:
         CHART_REPOSITORY_URL: http://chartmuseum:9999
         REGISTRY_CONTROLLER_URL: http://registryctl:8080
         WITH_CHARTMUSEUM: False
-        REGISTRY_CREDENTIAL_USERNAME: harbor_registry_user
+        REGISTRY_CREDENTIAL_USERNAME: {{ harbor_registry_user }}
         REGISTRY_CREDENTIAL_PASSWORD: {{ harbor_admin_password }}
         CSRF_KEY: {{ harbor_csrf_key }}
         PERMITTED_REGISTRY_TYPES_FOR_PROXY_CACHE: docker-hub,harbor,azure-acr,aws-ecr,google-gcr,quay,docker-registry
@@ -209,9 +208,9 @@ services:
     depends_on:
       - log
     logging:
-      driver: "syslog"
+      driver: {{ docker_log_driver | default('syslog')}}
       options:
-        syslog-address: "tcp://localhost:1514"
+        {{ docker_log_driver | default('syslog')}}-address: {{ logging_address }}
         tag: "portal"
 
   jobservice:
@@ -237,9 +236,9 @@ services:
     depends_on:
       - core
     logging:
-      driver: "syslog"
+      driver: {{ docker_log_driver | default('syslog')}}
       options:
-        syslog-address: "tcp://localhost:1514"
+        {{ docker_log_driver | default('syslog')}}-address: {{ logging_address }}
         tag: "jobservice"
     environment:
         CORE_SECRET: {{ harbor_core_secret }}
@@ -251,7 +250,7 @@ services:
         HTTP_PROXY: ""
         HTTPS_PROXY: ""
         NO_PROXY: portal,registry,nginx,notary-signer,127.0.0.1,localhost,registryctl,exporter,core,jobservice,.local,db,trivy-adapter,.internal,notary-server,postgresql,log,chartmuseum,redis
-        REGISTRY_CREDENTIAL_USERNAME: harbor_registry_user
+        REGISTRY_CREDENTIAL_USERNAME: {{ harbor_registry_user }}
         REGISTRY_CREDENTIAL_PASSWORD: {{ harbor_admin_password }}
 
   redis:
@@ -271,9 +270,9 @@ services:
     depends_on:
       - log
     logging:
-      driver: "syslog"
+      driver: {{ docker_log_driver | default('syslog')}}
       options:
-        syslog-address: "tcp://localhost:1514"
+        {{ docker_log_driver | default('syslog')}}-address: {{ logging_address }}
         tag: "redis"
 
   proxy:
@@ -305,9 +304,9 @@ services:
       - portal
       - log
     logging:
-      driver: "syslog"
+      driver: {{ docker_log_driver | default('syslog')}}
       options:
-        syslog-address: "tcp://localhost:1514"
+        {{ docker_log_driver | default('syslog')}}-address: {{ logging_address }}
         tag: "proxy"
 
   aquasec-trivy:
@@ -333,9 +332,9 @@ services:
         target: /harbor_cust_cert
 
     logging:
-      driver: "syslog"
+      driver: {{ docker_log_driver | default('syslog')}}
       options:
-        syslog-address: "tcp://localhost:1514"
+        {{ docker_log_driver | default('syslog')}}-address: {{ logging_address }}
         tag: "trivy-adapter"
 
 networks:

@@ -98,6 +98,18 @@
     owner: 10000
     group: 10000
 
+- name: Check docker_log_driver value
+  assert:
+    that: >
+      docker_log_driver in [
+        'none', 'host', 'local', 'json-file', 'syslog', 'journald', 'gelf', 
+        'fluentd', 'awslogs', 'splunk', 'etwlogs', 'gcplogs'
+        ]
+    fail_msg: >
+      Invalid docker_log_driver: '{{ docker_log_driver }}'.
+      Allowed: 'none', 'host', 'local', 'json-file', 'syslog', 'journald', 'gelf', 
+        'fluentd', 'awslogs', 'splunk', 'etwlogs', 'gcplogs'.
+
 - name: Ensure docker compose file
   ansible.builtin.template:
     src: "docker-compose.yml.j2"

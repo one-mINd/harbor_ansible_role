@@ -3,10 +3,16 @@ harbor_config_dir: /var/lib/harbor
 harbor_version: "v2.10.3"
 harbor_hostname: harbor.example.com            # you must change this variable before start playbook!!!!
 harbor_external_url: "http://{{ harbor_hostname }}" # you must change this variable before start playbook!!!!
+harbor_registry_user: admin
 harbor_admin_password: pass12345
 harbor_db_password: pass12345
+harbor_core_secret: pass12345
+harbor_jobservice_secret: pass12345
+harbor_csrf_key: pass12345      # minimum 32 characters
 harbor_data_volume: /data/harbor
 harbor_logs_volume: /var/log/harbor
+
+logging_address: "tcp://localhost:1514"
 
 harbor_http_port: 80
 

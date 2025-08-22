@@ -17,7 +17,9 @@ Role Variables
 --------------
 **harbor_hostname** - This var must be overwritten, because by default it localhost, but Harbor can't work on that hostname.
 
-**harbor_admin_password** and **harbor_db_password** must be overwritten to :)
+**harbor_registry_user** - login for web ui
+
+**harbor_admin_password**, **harbor_db_password**, **harbor_core_secret**, **harbor_jobservice_secret**, **harbor_csrf_key** must be overwritten to :)
 
 **harbor_config_dir** - place where harbor installation scripts and docker-compose.yml will be stored.
 
@@ -57,6 +59,8 @@ Role Variables
         
 **harbor_remove_projects** - list of projects to be removed
  - project_id
+
+**logging_address** - address for send logs from docker containers
 
 Example Playbook
 ----------------
