@@ -23,14 +23,13 @@ Role Variables
 
 **harbor_config_dir** - place where harbor installation scripts and docker-compose.yml will be stored.
 
-**harbor_http_port** - http port
-
 **harbor_remote_certificate_dir** and **harbor_remote_private_key_dir** dirs where certificates for harbor stored.
 
 **harbor_users** - list of users to be created
  - username
  - email
  - password
+ - htpasswd
  - realname
  - comment
 

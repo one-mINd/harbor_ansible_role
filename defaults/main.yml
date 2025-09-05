@@ -5,6 +5,9 @@ harbor_hostname: harbor.example.com            # you must change this variable b
 harbor_external_url: "http://{{ harbor_hostname }}" # you must change this variable before start playbook!!!!
 harbor_registry_user: admin
 harbor_admin_password: pass12345
+# Generate htpasswd here and all other places with the following command:
+# htpasswd -bnBC 5 "" YOUR_REAL_PASSWORD | tr -d ':'
+harbor_admin_htpasswd: pass
 harbor_db_password: pass12345
 harbor_core_secret: pass12345
 harbor_jobservice_secret: pass12345
@@ -14,10 +17,8 @@ harbor_logs_volume: /var/log/harbor
 
 logging_address: "tcp://localhost:1514"
 
-harbor_http_port: 80
-
-harbor_installer_args: "--with-trivy"
 harbor_force_install: false
+harbor_trivy: True
 
 # harbor_projects: []
 #   - project_name: "firstproject"
@@ -36,11 +37,13 @@ harbor_force_install: false
 #   - username: "user_one"
 #     email: "email@mail.com"
 #     password: "HarborUser12345"
+#     htpasswd: NONE # generate with - htpasswd -bnBC 5 "" YOUR_REAL_PASSWORD | tr -d ':'
 #     realname: "user one"
 #     comment: "void"
 #   - username: "second_one"
 #     email: "email_two@mail.com"
 #     password: "HarborUser12345"
+#     htpasswd: NONE # generate with - htpasswd -bnBC 5 "" YOUR_REAL_PASSWORD | tr -d ':'
 #     realname: "user two"
 #     comment: "void"
 

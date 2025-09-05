@@ -167,11 +167,11 @@ services:
         CORE_SECRET: {{ harbor_core_secret }}
         JOBSERVICE_SECRET: {{ harbor_jobservice_secret }}
         WITH_NOTARY: False
-        WITH_TRIVY: False
+        WITH_TRIVY: {{ harbor_trivy }}
         CORE_URL: http://core:8080
         CORE_LOCAL_URL: http://127.0.0.1:8080
         JOBSERVICE_URL: http://jobservice:8080
-        TRIVY_ADAPTER_URL: http://trivy-adapter:8080
+        TRIVY_ADAPTER_URL: http://aquasec-trivy:8080
         NOTARY_URL: http://notary-server:4443
         REGISTRY_STORAGE_PROVIDER_NAME: filesystem
         READ_ONLY: false
@@ -308,6 +308,7 @@ services:
       options:
         {{ docker_log_driver | default('syslog')}}-address: {{ logging_address }}
         tag: "proxy"
+    labels: {{ harbor_web_ui_labels }}
 
   aquasec-trivy:
     container_name: harbor-trivy-adapter
@@ -330,7 +331,8 @@ services:
       - type: bind
         source: {{ harbor_config_dir }}/config/shared/trust-certificates
         target: /harbor_cust_cert
-
+    environment:
+      SCANNER_REDIS_URL: redis://redis:6379?idle_timeout_seconds=30
     logging:
       driver: {{ docker_log_driver | default('syslog')}}
       options:

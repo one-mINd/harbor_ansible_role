@@ -1,0 +1,4 @@
+{{ harbor_registry_user }}:{{ harbor_admin_htpasswd }}
+{% for user in harbor_users %}
+{{ user.username }}:{{ user.htpasswd }}
+{% endfor %}

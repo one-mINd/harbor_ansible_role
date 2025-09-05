@@ -175,3 +175,11 @@
   until: _result.status == 200
   when: harbor_remove_members is defined
   with_items: "{{ harbor_remove_members }}"
+
+- name: Creating users in registry
+  ansible.builtin.template:
+    src: "confs/registry-passwd.j2"
+    dest: "{{ harbor_config_dir }}/config/registry/passwd"
+    mode: 0755
+    owner: 10000
+    group: 10000
